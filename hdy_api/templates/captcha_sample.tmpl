@@ -1,0 +1,65 @@
+<!doctype html>
+
+<head>
+	<title>图片、音频验证码示例</title>
+</head>
+
+<body>
+	<script>
+		function setSrcQuery(e, q) {
+			var src = e.src;
+			var p = src.indexOf('?');
+			if (p >= 0) {
+				src = src.substr(0, p);
+			}
+			e.src = src + "?" + q
+		}
+
+		function playAudio() {
+			var le = document.getElementById("lang");
+			var lang = le.options[le.selectedIndex].value;
+			var e = document.getElementById('audio')
+			setSrcQuery(e, "lang=" + lang)
+			e.style.display = 'block';
+			e.autoplay = 'true';
+			return false;
+		}
+
+		function changeLang() {
+			var e = document.getElementById('audio')
+			if (e.style.display == 'block') {
+				playAudio();
+			}
+		}
+
+		function reload() {
+			setSrcQuery(document.getElementById('image'), "reload=" + (new Date()).getTime());
+			setSrcQuery(document.getElementById('audio'), (new Date()).getTime());
+			return false;
+		}
+	</script>
+	<form action="/api/captchaVerify" method=post>
+		<p>
+			<img id=image src="/captcha/{{.CaptchaId}}.png" alt="Captcha image">
+			<a href="#" onclick="reload()">刷新</a>
+		</p>
+		选择语音播报的语言：
+		<select id="lang" onchange="changeLang()">
+			<option value="zh">中文</option>
+			<option value="en">English</option>
+			<option value="ja">日本語</option>
+			<option value="ru">русский</option>
+		</select>
+		|
+		<a href="#" onclick="playAudio()">播放语音</a>
+		<audio id=audio controls style="display:none" src="/captcha/{{.CaptchaId}}.wav" preload=none>
+			你的浏览器不支持声音
+			<a href="/captcha/download/{{.CaptchaId}}.wav">下载音频</a>使用其他播放器播放。
+		</audio>
+		<p>
+			<input type=hidden name=captchaId value="{{.CaptchaId}}">
+			<br> 请输入您看到的或听到的数字：
+			<input name=captchaCode>
+			<input type=submit value="提交">
+		</p>
+	</form>
