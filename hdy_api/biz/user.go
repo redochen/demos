@@ -2,16 +2,17 @@ package biz
 
 import (
 	"errors"
-	"github.com/redochen/demos/hdy_api/access"
-	. "github.com/redochen/demos/hdy_api/entities"
-	. "github.com/redochen/demos/hdy_api/models"
-	"github.com/redochen/demos/hdy_api/utils"
-	. "github.com/redochen/tools/string"
 	"time"
+
+	"github.com/redochen/demos/hdy_api/access"
+	"github.com/redochen/demos/hdy_api/entities"
+	"github.com/redochen/demos/hdy_api/models"
+	"github.com/redochen/demos/hdy_api/utils"
+	CcStr "github.com/redochen/tools/string"
 )
 
-//注册
-func Register(model *UserModel) (string, error) {
+//Register 注册
+func Register(model *models.UserModel) (string, error) {
 	if nil == model {
 		return "", errors.New("invalid parameters")
 	}
@@ -20,19 +21,19 @@ func Register(model *UserModel) (string, error) {
 	user, err := access.GetUserByAccount(model.Account, false)
 	if err != nil {
 		return "", err
-	} else if user != nil && user.Id > 0 {
+	} else if user != nil && user.ID > 0 {
 		return "", errors.New("account already exists")
 	}
 
 	//检查OpenID是否已记录
 	if model.OpenID != "" {
-		user, err = access.GetUserByOpenId(model.OpenID)
+		user, err = access.GetUserByOpenID(model.OpenID)
 		if err != nil {
 			return "", err
 		}
 	}
 
-	if user != nil && user.Id > 0 {
+	if user != nil && user.ID > 0 {
 		user.Account = model.Account
 		user.Password = model.Password
 		user.NickName = CcStr.FirstValid(model.NickName, user.NickName)
@@ -49,11 +50,11 @@ func Register(model *UserModel) (string, error) {
 			return "", err
 		}
 
-		return user.Guid, nil
+		return user.GUID, nil
 	}
 
 	entity := getEntityOfUserModel(model)
-	entity.Guid, _ = CcStr.NewGuid()
+	entity.GUID, _ = CcStr.NewGUID()
 	entity.LoginAt = time.Now()
 
 	_, err = access.AddUser(entity)
@@ -61,12 +62,12 @@ func Register(model *UserModel) (string, error) {
 		return "", err
 	}
 
-	return entity.Guid, nil
+	return entity.GUID, nil
 }
 
-//登录
-func Login(account, password, openId string) (*UserModel, error) {
-	var user *UserEntity
+//Login 登录
+func Login(account, password, openID string) (*models.UserModel, error) {
+	var user *entities.UserEntity
 	var err error
 
 	if account != "" && password != "" { //账号密码登录
@@ -75,26 +76,26 @@ func Login(account, password, openId string) (*UserModel, error) {
 			return nil, err
 		}
 
-		if nil == user || user.Id <= 0 {
+		if nil == user || user.ID <= 0 {
 			return nil, errors.New("account not exists")
 		}
 	} else { //匿名登录
-		if openId == "" {
+		if openID == "" {
 			return nil, errors.New("invalid openID")
 		}
 
-		user, err = access.GetUserByOpenId(openId)
+		user, err = access.GetUserByOpenID(openID)
 		if err != nil {
 			return nil, err
 		}
 
 		//记录新用户
-		if nil == user || user.Id <= 0 {
-			user = &UserEntity{
-				WechatOpenID: openId,
+		if nil == user || user.ID <= 0 {
+			user = &entities.UserEntity{
+				WechatOpenID: openID,
 			}
 
-			user.Guid, _ = CcStr.NewGuid()
+			user.GUID, _ = CcStr.NewGUID()
 
 			_, err = access.AddUser(user)
 			if err != nil {
@@ -104,31 +105,31 @@ func Login(account, password, openId string) (*UserModel, error) {
 	}
 
 	//更新登录时间
-	access.UpdateUserLoginTime(user.Id)
+	access.UpdateUserLoginTime(user.ID)
 
 	return getModelOfUserEntity(user, true), nil
 }
 
-//更新用户信息
-func UpdateUser(model *UserModel) error {
+//UpdateUser 更新用户信息
+func UpdateUser(model *models.UserModel) error {
 	if nil == model {
 		return errors.New("invalid parameters")
 	}
 
-	var user *UserEntity
+	var user *entities.UserEntity
 	var err error
 
-	if model.Guid != "" {
-		user, err = access.GetUserByGuid(model.Guid)
+	if model.GUID != "" {
+		user, err = access.GetUserByGUID(model.GUID)
 	} else if model.OpenID != "" {
-		user, err = access.GetUserByOpenId(model.OpenID)
+		user, err = access.GetUserByOpenID(model.OpenID)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	if nil == user || user.Id <= 0 {
+	if nil == user || user.ID <= 0 {
 		return errors.New("user not exists")
 	}
 
@@ -147,9 +148,9 @@ func UpdateUser(model *UserModel) error {
 	return err
 }
 
-//获取用户详情
-func GetUser(guid string) (*UserModel, error) {
-	entity, err := access.GetUserByGuid(guid)
+//GetUser 获取用户详情
+func GetUser(guid string) (*models.UserModel, error) {
+	entity, err := access.GetUserByGUID(guid)
 	if err != nil {
 		return nil, err
 	}
@@ -157,32 +158,32 @@ func GetUser(guid string) (*UserModel, error) {
 	return getModelOfUserEntity(entity, true), nil
 }
 
-//获取用户列表
-func GetUsers(pageIndex, pageSize int) (models []*UserModel, totalCount, pageCount int64, err error) {
+//GetUsers 获取用户列表
+func GetUsers(pageIndex, pageSize int) (users []*models.UserModel, totalCount, pageCount int64, err error) {
 	entities, totalCount, pageCount, err := access.GetUsers(pageIndex, pageSize)
 	if err != nil {
 		return
 	}
 
-	models = make([]*UserModel, 0)
+	users = make([]*models.UserModel, 0)
 
 	if entities != nil && len(entities) > 0 {
 		for _, entity := range entities {
-			model := getModelOfUserEntity(entity, false)
-			models = append(models, model)
+			user := getModelOfUserEntity(entity, false)
+			users = append(users, user)
 		}
 	}
 
 	return
 }
 
-func getEntityOfUserModel(model *UserModel) *UserEntity {
+func getEntityOfUserModel(model *models.UserModel) *entities.UserEntity {
 	if nil == model {
 		return nil
 	}
 
-	entity := &UserEntity{
-		Guid:         model.Guid,
+	entity := &entities.UserEntity{
+		GUID:         model.GUID,
 		Account:      model.Account,
 		Password:     model.Password,
 		NickName:     model.NickName,
@@ -202,12 +203,12 @@ func getEntityOfUserModel(model *UserModel) *UserEntity {
 	return entity
 }
 
-func getModelOfUserEntity(entity *UserEntity, details bool) *UserModel {
+func getModelOfUserEntity(entity *entities.UserEntity, details bool) *models.UserModel {
 	if nil == entity {
 		return nil
 	}
 
-	model := &UserModel{
+	model := &models.UserModel{
 		Account:   entity.Account,
 		Password:  "", //entity.Password,
 		NickName:  entity.NickName,
@@ -225,7 +226,7 @@ func getModelOfUserEntity(entity *UserEntity, details bool) *UserModel {
 		model.QQ = entity.QQ
 	}
 
-	model.Guid = entity.Guid
+	model.GUID = entity.GUID
 	model.CreatedAt = utils.FormatDateTime(entity.CreatedAt)
 	model.UpdatedAt = utils.FormatDateTime(entity.UpdatedAt)
 

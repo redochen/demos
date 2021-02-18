@@ -2,14 +2,15 @@ package access
 
 import (
 	"errors"
-	"github.com/go-xorm/xorm"
-	. "github.com/redochen/demos/hdy_api/entities"
-	"github.com/redochen/demos/hdy_api/utils"
 	"math"
+
+	"github.com/go-xorm/xorm"
+	"github.com/redochen/demos/hdy_api/entities"
+	"github.com/redochen/demos/hdy_api/utils"
 )
 
-//添加关系
-func AddRelation(relation *RelationEntity) (int64, error) {
+//AddRelation 添加关系
+func AddRelation(relation *entities.RelationEntity) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
@@ -18,19 +19,19 @@ func AddRelation(relation *RelationEntity) (int64, error) {
 		return 0, errors.New("invalid parameter")
 	}
 
-	if relation.UserId <= 0 {
+	if relation.UserID <= 0 {
 		return 0, errors.New("invalid user ID")
 	}
 
-	if relation.FriendUserId <= 0 {
+	if relation.FriendUserID <= 0 {
 		return 0, errors.New("invalid friend user ID")
 	}
 
 	return engine.InsertOne(relation)
 }
 
-//更新关系
-func UpdateRelation(relation *RelationEntity) (int64, error) {
+//UpdateRelation 更新关系
+func UpdateRelation(relation *entities.RelationEntity) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
@@ -39,48 +40,48 @@ func UpdateRelation(relation *RelationEntity) (int64, error) {
 		return 0, errors.New("invalid parameter")
 	}
 
-	if relation.Id <= 0 {
+	if relation.ID <= 0 {
 		return 0, errors.New("invalid relation ID")
 	}
 
-	return engine.Id(relation.Id).Update(relation)
+	return engine.Id(relation.ID).Update(relation)
 }
 
-//获取关系
-func GetRelation(userId, friendUserId int64) (*RelationEntity, error) {
+//GetRelation 获取关系
+func GetRelation(userID, friendUserID int64) (*entities.RelationEntity, error) {
 	if nil == engine {
 		return nil, errors.New("engine not initialized")
 	}
 
-	if userId <= 0 {
+	if userID <= 0 {
 		return nil, errors.New("invalid user ID")
 	}
 
-	if friendUserId <= 0 {
+	if friendUserID <= 0 {
 		return nil, errors.New("invalid friend user ID")
 	}
 
-	var relation RelationEntity
+	var relation entities.RelationEntity
 
-	_, err := engine.Where("user_id = ?", userId).
-		And("friend_user_id = ?", friendUserId).Get(&relation)
+	_, err := engine.Where("user_id = ?", userID).
+		And("friend_user_id = ?", friendUserID).Get(&relation)
 
 	return &relation, err
 }
 
-//获取关系列表
-func GetRelations(userId int64, status, pageIndex, pageSize int) (relations []*RelationEntity, totalCount, pageCount int64, err error) {
+//GetRelations 获取关系列表
+func GetRelations(userID int64, status, pageIndex, pageSize int) (relations []*entities.RelationEntity, totalCount, pageCount int64, err error) {
 	if nil == engine {
 		err = errors.New("engine not initialized")
 		return
 	}
 
-	if userId <= 0 {
+	if userID <= 0 {
 		err = errors.New("invalid user ID")
 		return
 	}
 
-	relation := new(RelationEntity)
+	relation := new(entities.RelationEntity)
 	offset, limit := utils.GetOffsetAndLimit(pageIndex, pageSize)
 
 	totalCount, err = engine.Count(relation)
@@ -95,9 +96,9 @@ func GetRelations(userId int64, status, pageIndex, pageSize int) (relations []*R
 	var rows *xorm.Rows
 
 	if utils.RelationStatusAll == status {
-		rows, err = engine.Where("user_id = ?", userId).Limit(limit, offset).Rows(relation)
+		rows, err = engine.Where("user_id = ?", userID).Limit(limit, offset).Rows(relation)
 	} else {
-		rows, err = engine.Where("user_id = ?", userId).And("status = ?", status).Limit(limit, offset).Rows(relation)
+		rows, err = engine.Where("user_id = ?", userID).And("status = ?", status).Limit(limit, offset).Rows(relation)
 	}
 
 	if err != nil {
@@ -106,7 +107,7 @@ func GetRelations(userId int64, status, pageIndex, pageSize int) (relations []*R
 
 	defer rows.Close()
 
-	relations = make([]*RelationEntity, 0)
+	relations = make([]*entities.RelationEntity, 0)
 
 	for rows.Next() {
 		err = rows.Scan(relation)
@@ -117,21 +118,21 @@ func GetRelations(userId int64, status, pageIndex, pageSize int) (relations []*R
 		relations = append(relations, relation)
 
 		//注意：这里应重新分配内存
-		relation = new(RelationEntity)
+		relation = new(entities.RelationEntity)
 	}
 
 	return
 }
 
-//更新关系状态
-func UpdateRelationStatus(relationId int64, status int) (int64, error) {
+//UpdateRelationStatus 更新关系状态
+func UpdateRelationStatus(relationID int64, status int) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
 
-	if relationId <= 0 {
+	if relationID <= 0 {
 		return 0, errors.New("invalid relation ID")
 	}
 
-	return engine.Id(relationId).Cols("status").Update(&RelationEntity{Status: status})
+	return engine.Id(relationID).Cols("status").Update(&entities.RelationEntity{Status: status})
 }

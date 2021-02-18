@@ -2,14 +2,15 @@ package access
 
 import (
 	"errors"
-	"github.com/go-xorm/xorm"
-	. "github.com/redochen/demos/hdy_api/entities"
-	"github.com/redochen/demos/hdy_api/utils"
 	"math"
+
+	"github.com/go-xorm/xorm"
+	"github.com/redochen/demos/hdy_api/entities"
+	"github.com/redochen/demos/hdy_api/utils"
 )
 
-//添加邀请
-func AddInvitation(invitation *InvitationEntity) (int64, error) {
+//AddInvitation 添加邀请
+func AddInvitation(invitation *entities.InvitationEntity) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
@@ -18,19 +19,19 @@ func AddInvitation(invitation *InvitationEntity) (int64, error) {
 		return 0, errors.New("invalid parameter")
 	}
 
-	if invitation.UserId <= 0 {
+	if invitation.UserID <= 0 {
 		return 0, errors.New("invalid user ID")
 	}
 
-	if invitation.FriendUserId <= 0 {
+	if invitation.FriendUserID <= 0 {
 		return 0, errors.New("invalid friend user ID")
 	}
 
 	return engine.InsertOne(invitation)
 }
 
-//更新邀请
-func UpdateInvitation(invitation *InvitationEntity) (int64, error) {
+//UpdateInvitation 更新邀请
+func UpdateInvitation(invitation *entities.InvitationEntity) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
@@ -39,48 +40,48 @@ func UpdateInvitation(invitation *InvitationEntity) (int64, error) {
 		return 0, errors.New("invalid parameter")
 	}
 
-	if invitation.Id <= 0 {
+	if invitation.ID <= 0 {
 		return 0, errors.New("invalid invitation ID")
 	}
 
-	return engine.Id(invitation.Id).Update(invitation)
+	return engine.Id(invitation.ID).Update(invitation)
 }
 
-//获取邀请
-func GetInvitation(userId, friendUserId int64) (*InvitationEntity, error) {
+//GetInvitation 获取邀请
+func GetInvitation(userID, friendUserID int64) (*entities.InvitationEntity, error) {
 	if nil == engine {
 		return nil, errors.New("engine not initialized")
 	}
 
-	if userId <= 0 {
+	if userID <= 0 {
 		return nil, errors.New("invalid user ID")
 	}
 
-	if friendUserId <= 0 {
+	if friendUserID <= 0 {
 		return nil, errors.New("invalid friend user ID")
 	}
 
-	var invitation InvitationEntity
+	var invitation entities.InvitationEntity
 
-	_, err := engine.Where("user_id = ?", userId).
-		And("friend_user_id = ?", friendUserId).Get(&invitation)
+	_, err := engine.Where("user_id = ?", userID).
+		And("friend_user_id = ?", friendUserID).Get(&invitation)
 
 	return &invitation, err
 }
 
-//获取邀请列表
-func GetInvitations(userId int64, status, pageIndex, pageSize int) (invitations []*InvitationEntity, totalCount, pageCount int64, err error) {
+//GetInvitations 获取邀请列表
+func GetInvitations(userID int64, status, pageIndex, pageSize int) (invitations []*entities.InvitationEntity, totalCount, pageCount int64, err error) {
 	if nil == engine {
 		err = errors.New("engine not initialized")
 		return
 	}
 
-	if userId <= 0 {
+	if userID <= 0 {
 		err = errors.New("invalid user ID")
 		return
 	}
 
-	invitation := new(InvitationEntity)
+	invitation := new(entities.InvitationEntity)
 	offset, limit := utils.GetOffsetAndLimit(pageIndex, pageSize)
 
 	totalCount, err = engine.Count(invitation)
@@ -95,9 +96,9 @@ func GetInvitations(userId int64, status, pageIndex, pageSize int) (invitations 
 	var rows *xorm.Rows
 
 	if utils.InvitationStatusAll == status {
-		rows, err = engine.Where("user_id = ?", userId).Limit(limit, offset).Rows(invitation)
+		rows, err = engine.Where("user_id = ?", userID).Limit(limit, offset).Rows(invitation)
 	} else {
-		rows, err = engine.Where("user_id = ?", userId).And("status = ?", status).Limit(limit, offset).Rows(invitation)
+		rows, err = engine.Where("user_id = ?", userID).And("status = ?", status).Limit(limit, offset).Rows(invitation)
 	}
 
 	if err != nil {
@@ -106,7 +107,7 @@ func GetInvitations(userId int64, status, pageIndex, pageSize int) (invitations 
 
 	defer rows.Close()
 
-	invitations = make([]*InvitationEntity, 0)
+	invitations = make([]*entities.InvitationEntity, 0)
 
 	for rows.Next() {
 		err = rows.Scan(invitation)
@@ -117,21 +118,21 @@ func GetInvitations(userId int64, status, pageIndex, pageSize int) (invitations 
 		invitations = append(invitations, invitation)
 
 		//注意：这里应重新分配内存
-		invitation = new(InvitationEntity)
+		invitation = new(entities.InvitationEntity)
 	}
 
 	return
 }
 
-//更新邀请状态
-func UpdateInvitationStatus(invitationId int64, status int) (int64, error) {
+//UpdateInvitationStatus 更新邀请状态
+func UpdateInvitationStatus(invitationID int64, status int) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
 
-	if invitationId <= 0 {
+	if invitationID <= 0 {
 		return 0, errors.New("invalid invitation ID")
 	}
 
-	return engine.Id(invitationId).Cols("status").Update(&InvitationEntity{Status: status})
+	return engine.Id(invitationID).Cols("status").Update(&entities.InvitationEntity{Status: status})
 }

@@ -1,47 +1,48 @@
 package services
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/redochen/demos/hdy_api/biz"
-	. "github.com/redochen/demos/hdy_api/models"
+	"github.com/redochen/demos/hdy_api/models"
 	"github.com/redochen/demos/hdy_api/status"
 	"github.com/redochen/demos/hdy_api/utils"
-	. "github.com/redochen/tools/function"
-	"net/http"
+	CcFunc "github.com/redochen/tools/function"
 )
 
-//注册接口
+//RegisterAsync 注册接口
 func RegisterAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	var err error
-	user := &UserModel{}
+	user := &models.UserModel{}
 
 	if err = ctx.BindJSON(user); err != nil {
-		ctx.JSON(http.StatusBadRequest, NewResult(status.CustomError, err.Error()))
+		ctx.JSON(http.StatusBadRequest, models.NewResult(status.CustomError, err.Error()))
 		return
 	}
 
-	captchaId, captchaCode := utils.GetCaptchaParameters(ctx)
+	captchaID, captchaCode := utils.GetCaptchaParameters(ctx)
 
 	//创建一个chan用于接收异步处理结果
 	ch := make(chan interface{}, 1)
 
 	//异步执行
-	go func(u *UserModel, id, code string, c chan<- interface{}) {
+	go func(u *models.UserModel, id, code string, c chan<- interface{}) {
 		c <- register(u, id, code)
-	}(user, captchaId, captchaCode, ch)
+	}(user, captchaID, captchaCode, ch)
 
 	//等待异步处理结果并返回响应
 	utils.WaitAndResponse(ctx, ch, "RegisterAsync")
 }
 
-//注册功能
-func register(user *UserModel, captchaId, captchaCode string) interface{} {
-	defer CheckPanic()
+//register 注册功能
+func register(user *models.UserModel, captchaID, captchaCode string) interface{} {
+	defer CcFunc.CheckPanic()
 
 	if nil == user {
-		return NewResult(status.CustomError, "invalid parameter")
+		return models.NewResult(status.CustomError, "invalid parameter")
 	}
 
 	mustHasCode := false
@@ -52,24 +53,24 @@ func register(user *UserModel, captchaId, captchaCode string) interface{} {
 	}
 
 	//检测验证码
-	err := utils.VerifyCaptcha(captchaId, captchaCode, false, mustHasCode)
+	err := utils.VerifyCaptcha(captchaID, captchaCode, false, mustHasCode)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
+		return models.NewResult(status.CustomError, err.Error())
 	}
 
 	guid, err := biz.Register(user)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
+		return models.NewResult(status.CustomError, err.Error())
 	}
 
-	return NewRegisterResult(guid)
+	return models.NewRegisterResult(guid)
 }
 
-//登录接口
+//LoginAsync 登录接口
 func LoginAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
-	openId := ctx.Query("openid")
+	openID := ctx.Query("openid")
 	account := ctx.Query("account")
 	password := ctx.Query("password")
 
@@ -79,74 +80,74 @@ func LoginAsync(ctx *gin.Context) {
 	//异步执行
 	go func(acc, pass, id string, c chan<- interface{}) {
 		c <- login(acc, pass, id)
-	}(account, password, openId, ch)
+	}(account, password, openID, ch)
 
 	//等待异步处理结果并返回响应
 	utils.WaitAndResponse(ctx, ch, "LoginAsync")
 }
 
-//注册功能
+//login 登录功能
 func login(account, password, openid string) interface{} {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	user, err := biz.Login(account, password, openid)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
-	} else {
-		return NewUserResult(user)
+		return models.NewResult(status.CustomError, err.Error())
 	}
+
+	return models.NewUserResult(user)
 }
 
-//更新用户接口
+//UpdateUserAsync 更新用户接口
 func UpdateUserAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	var err error
-	user := &UserModel{}
+	user := &models.UserModel{}
 
 	if err = ctx.BindJSON(user); err != nil {
-		ctx.JSON(http.StatusBadRequest, NewResult(status.CustomError, err.Error()))
+		ctx.JSON(http.StatusBadRequest, models.NewResult(status.CustomError, err.Error()))
 		return
 	}
 
-	captchaId, captchaCode := utils.GetCaptchaParameters(ctx)
+	captchaID, captchaCode := utils.GetCaptchaParameters(ctx)
 
 	//创建一个chan用于接收异步处理结果
 	ch := make(chan interface{}, 1)
 
 	//异步执行
-	go func(u *UserModel, id, code string, c chan<- interface{}) {
+	go func(u *models.UserModel, id, code string, c chan<- interface{}) {
 		c <- register(u, id, code)
-	}(user, captchaId, captchaCode, ch)
+	}(user, captchaID, captchaCode, ch)
 
 	//等待异步处理结果并返回响应
 	utils.WaitAndResponse(ctx, ch, "UpdateUserAsync")
 
 }
 
-//更新用户功能
-func updateUser(user *UserModel, captchaId, captchaCode string) interface{} {
-	defer CheckPanic()
+//updateUser 更新用户功能
+func updateUser(user *models.UserModel, captchaID, captchaCode string) interface{} {
+	defer CcFunc.CheckPanic()
 
 	//检测验证码
-	err := utils.VerifyCaptcha(captchaId, captchaCode, false, false)
+	err := utils.VerifyCaptcha(captchaID, captchaCode, false, false)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
+		return models.NewResult(status.CustomError, err.Error())
 	}
 
 	err = biz.UpdateUser(user)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
+		return models.NewResult(status.CustomError, err.Error())
 	}
 
-	return NewResult(status.Success)
+	return models.NewResult(status.Success)
 }
 
-//获取用户详情接口
+//GetUserAsync 获取用户详情接口
 func GetUserAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
-	userGuid := utils.GetUserGuidParameter(ctx)
+	userGUID := utils.GetUserGUIDParameter(ctx)
 
 	//创建一个chan用于接收异步处理结果
 	ch := make(chan interface{}, 1)
@@ -154,27 +155,27 @@ func GetUserAsync(ctx *gin.Context) {
 	//异步执行
 	go func(guid string, c chan<- interface{}) {
 		c <- getUser(guid)
-	}(userGuid, ch)
+	}(userGUID, ch)
 
 	//等待异步处理结果并返回响应
 	utils.WaitAndResponse(ctx, ch, "GetUserAsync")
 }
 
-//获取用户详情功能
+//getUser 获取用户详情功能
 func getUser(guid string) interface{} {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	user, err := biz.GetUser(guid)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
-	} else {
-		return NewUserResult(user)
+		return models.NewResult(status.CustomError, err.Error())
 	}
+
+	return models.NewUserResult(user)
 }
 
-//获取用户列表接口
+//GetUsersAsync 获取用户列表接口
 func GetUsersAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	pageIndex, pageSize := utils.GetPageParameters(ctx)
 
@@ -190,14 +191,14 @@ func GetUsersAsync(ctx *gin.Context) {
 	utils.WaitAndResponse(ctx, ch, "GetUsersAsync")
 }
 
-//获取用户列表功能
+//getUsers 获取用户列表功能
 func getUsers(pageIndex, pageSize int) interface{} {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	users, totalCount, pageCount, err := biz.GetUsers(pageIndex, pageSize)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
-	} else {
-		return NewListResultEx(users, totalCount, pageCount)
+		return models.NewResult(status.CustomError, err.Error())
 	}
+
+	return models.NewListResultEx(users, totalCount, pageCount)
 }

@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
-	. "github.com/gin-gonic/contrib/gzip"
-	"github.com/gin-gonic/gin"
-	"github.com/redochen/demos/hdy_api/config"
-	"github.com/redochen/demos/hdy_api/docs"
-	svc "github.com/redochen/demos/hdy_api/services"
-	. "github.com/redochen/tools/log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/contrib/gzip"
+	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/redochen/demos/hdy_api/config"
+	"github.com/redochen/demos/hdy_api/docs"
+	svc "github.com/redochen/demos/hdy_api/services"
+	"github.com/redochen/tools/log"
 )
 
 func main() {
@@ -23,7 +25,7 @@ func main() {
 	r.Use(keepAlive())
 	r.Use(ginLogger())
 	r.Use(gin.Recovery())
-	r.Use(Gzip(BestCompression))
+	r.Use(gzip.Gzip(gzip.BestCompression))
 
 	r.LoadHTMLGlob("templates/*")
 
@@ -32,22 +34,22 @@ func main() {
 	})
 
 	//文档接口
-	r.GET("/docs", docs.ApiDocs)
-	r.GET("/docs/captcha", docs.ApidocCaptcha)
-	r.GET("/docs/captcha/sms", docs.ApiDocSmsCaptcha)
-	r.GET("/docs/captcha/verify", docs.ApiDocVerifyCaptcha)
-	r.GET("/docs/captcha/resource", docs.ApiDocCaptchaResource)
-	r.GET("/docs/captcha/sample", docs.ApiDocCaptchaSample)
-	r.GET("/docs/games", docs.ApiDocGames)
-	r.GET("/docs/game/areas", docs.ApiDocGameAreas)
-	r.GET("/docs/game/servers", docs.ApiDocGameServers)
-	r.GET("/docs/game/dans", docs.ApiDocGameDans)
-	r.GET("/docs/game/heroes", docs.ApiDocGameHeroes)
-	r.GET("/docs/user/register", docs.ApiDocRegister)
-	r.GET("/docs/user/login", docs.ApiDocLogin)
-	r.GET("/docs/user/update", docs.ApiDocUpdateUser)
-	r.GET("/docs/user/details", docs.ApiDocGetUser)
-	r.GET("/docs/users", docs.ApiDocGetUsers)
+	r.GET("/docs", docs.APIDocs)
+	r.GET("/docs/captcha", docs.APIDocCaptcha)
+	r.GET("/docs/captcha/sms", docs.APIDocSmsCaptcha)
+	r.GET("/docs/captcha/verify", docs.APIDocVerifyCaptcha)
+	r.GET("/docs/captcha/resource", docs.APIDocCaptchaResource)
+	r.GET("/docs/captcha/sample", docs.APIDocCaptchaSample)
+	r.GET("/docs/games", docs.APIDocGames)
+	r.GET("/docs/game/areas", docs.APIDocGameAreas)
+	r.GET("/docs/game/servers", docs.APIDocGameServers)
+	r.GET("/docs/game/dans", docs.APIDocGameDans)
+	r.GET("/docs/game/heroes", docs.APIDocGameHeroes)
+	r.GET("/docs/user/register", docs.APIDocRegister)
+	r.GET("/docs/user/login", docs.APIDocLogin)
+	r.GET("/docs/user/update", docs.APIDocUpdateUser)
+	r.GET("/docs/user/details", docs.APIDocGetUser)
+	r.GET("/docs/users", docs.APIDocGetUsers)
 
 	//游戏接口
 	r.GET("/api/games", svc.GamesAsync)
@@ -107,7 +109,7 @@ func ginLogger() gin.HandlerFunc {
 		//log.Print(latency)
 
 		// access the status we are sending
-		Logger.Infof("%s; Completed %v %s in %v.",
+		log.Infof("%s; Completed %v %s in %v.",
 			msg, ctx.Writer.Status(), http.StatusText(ctx.Writer.Status()), latency)
 	}
 }

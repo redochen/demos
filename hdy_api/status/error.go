@@ -2,9 +2,11 @@ package status
 
 import (
 	"fmt"
-	. "github.com/redochen/tools/string"
+
+	CcStr "github.com/redochen/tools/string"
 )
 
+//ErrorCode 错误代码
 type ErrorCode int
 
 const (
@@ -14,7 +16,7 @@ const (
 	Timeout
 )
 
-//获取错误信息
+//GetErrMessage 获取错误信息
 func GetErrMessage(errCode ErrorCode, errMsg ...string) string {
 	if CustomError == errCode {
 		msg := CcStr.FirstValid(errMsg...)

@@ -3,16 +3,16 @@ package services
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/redochen/demos/hdy_api/biz"
-	. "github.com/redochen/demos/hdy_api/models"
+	"github.com/redochen/demos/hdy_api/models"
 	"github.com/redochen/demos/hdy_api/status"
 	"github.com/redochen/demos/hdy_api/utils"
-	. "github.com/redochen/tools/function"
-	. "github.com/redochen/tools/string"
+	CcFunc "github.com/redochen/tools/function"
+	CcStr "github.com/redochen/tools/string"
 )
 
-//获取游戏列表接口
+//GamesAsync 获取游戏列表接口
 func GamesAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	//创建一个chan用于接收异步处理结果
 	ch := make(chan interface{}, 1)
@@ -26,23 +26,23 @@ func GamesAsync(ctx *gin.Context) {
 	utils.WaitAndResponse(ctx, ch, "GamesAsync")
 }
 
-//获取游戏列表功能
+//getGames 获取游戏列表功能
 func getGames() interface{} {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	games, err := biz.GetGames()
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
+		return models.NewResult(status.CustomError, err.Error())
 	}
 
-	return NewListResult(games)
+	return models.NewListResult(games)
 }
 
-//获取游戏大区列表接口
+//GameAreasAsync 获取游戏大区列表接口
 func GameAreasAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
-	gameId := CcStr.ParseInt(ctx.Query("gameId"))
+	gameID := CcStr.ParseInt(ctx.Query("gameID"))
 
 	//创建一个chan用于接收异步处理结果
 	ch := make(chan interface{}, 1)
@@ -50,29 +50,29 @@ func GameAreasAsync(ctx *gin.Context) {
 	//异步执行
 	go func(id int, c chan<- interface{}) {
 		c <- getGameAreas(id)
-	}(gameId, ch)
+	}(gameID, ch)
 
 	//等待异步处理结果并返回响应
 	utils.WaitAndResponse(ctx, ch, "GameAreasAsync")
 }
 
-//获取游戏大区列表功能
-func getGameAreas(gameId int) interface{} {
-	defer CheckPanic()
+//getGameAreas 获取游戏大区列表功能
+func getGameAreas(gameID int) interface{} {
+	defer CcFunc.CheckPanic()
 
-	areas, err := biz.GetGameAreas(gameId)
+	areas, err := biz.GetGameAreas(gameID)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
+		return models.NewResult(status.CustomError, err.Error())
 	}
 
-	return NewListResult(areas)
+	return models.NewListResult(areas)
 }
 
-//获取游戏服务器列表接口
+//GameServersAsync 获取游戏服务器列表接口
 func GameServersAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
-	areaId := CcStr.ParseInt(ctx.Query("areaId"))
+	areaID := CcStr.ParseInt(ctx.Query("areaId"))
 
 	//创建一个chan用于接收异步处理结果
 	ch := make(chan interface{}, 1)
@@ -80,29 +80,29 @@ func GameServersAsync(ctx *gin.Context) {
 	//异步执行
 	go func(id int, c chan<- interface{}) {
 		c <- gameGameServers(id)
-	}(areaId, ch)
+	}(areaID, ch)
 
 	//等待异步处理结果并返回响应
 	utils.WaitAndResponse(ctx, ch, "GameServersAsync")
 }
 
-//获取游戏服务器列表功能
-func gameGameServers(areaId int) interface{} {
-	defer CheckPanic()
+//gameGameServers 获取游戏服务器列表功能
+func gameGameServers(areaID int) interface{} {
+	defer CcFunc.CheckPanic()
 
-	servers, err := biz.GetGameServers(areaId)
+	servers, err := biz.GetGameServers(areaID)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
+		return models.NewResult(status.CustomError, err.Error())
 	}
 
-	return NewListResult(servers)
+	return models.NewListResult(servers)
 }
 
-//获取游戏段位列表接口
+//GameDansAsync 获取游戏段位列表接口
 func GameDansAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
-	gameId := CcStr.ParseInt(ctx.Query("gameId"))
+	gameID := CcStr.ParseInt(ctx.Query("gameID"))
 
 	//创建一个chan用于接收异步处理结果
 	ch := make(chan interface{}, 1)
@@ -110,29 +110,29 @@ func GameDansAsync(ctx *gin.Context) {
 	//异步执行
 	go func(id int, c chan<- interface{}) {
 		c <- getGameDans(id)
-	}(gameId, ch)
+	}(gameID, ch)
 
 	//等待异步处理结果并返回响应
 	utils.WaitAndResponse(ctx, ch, "GameDansAsync")
 }
 
-//获取游戏段位列表功能
-func getGameDans(gameId int) interface{} {
-	defer CheckPanic()
+//getGameDans 获取游戏段位列表功能
+func getGameDans(gameID int) interface{} {
+	defer CcFunc.CheckPanic()
 
-	dans, err := biz.GetGameDans(gameId)
+	dans, err := biz.GetGameDans(gameID)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
+		return models.NewResult(status.CustomError, err.Error())
 	}
 
-	return NewListResult(dans)
+	return models.NewListResult(dans)
 }
 
-//获取游戏英雄列表接口
+//GameHeroesAsync 获取游戏英雄列表接口
 func GameHeroesAsync(ctx *gin.Context) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
-	gameId := CcStr.ParseInt(ctx.Query("gameId"))
+	gameID := CcStr.ParseInt(ctx.Query("gameID"))
 
 	//创建一个chan用于接收异步处理结果
 	ch := make(chan interface{}, 1)
@@ -140,20 +140,20 @@ func GameHeroesAsync(ctx *gin.Context) {
 	//异步执行
 	go func(id int, c chan<- interface{}) {
 		c <- getGameHeroes(id)
-	}(gameId, ch)
+	}(gameID, ch)
 
 	//等待异步处理结果并返回响应
 	utils.WaitAndResponse(ctx, ch, "GameHeroesAsync")
 }
 
-//获取游戏英雄列表功能
-func getGameHeroes(gameId int) interface{} {
-	defer CheckPanic()
+//getGameHeroes 获取游戏英雄列表功能
+func getGameHeroes(gameID int) interface{} {
+	defer CcFunc.CheckPanic()
 
-	heroes, err := biz.GetGameHeroes(gameId)
+	heroes, err := biz.GetGameHeroes(gameID)
 	if err != nil {
-		return NewResult(status.CustomError, err.Error())
+		return models.NewResult(status.CustomError, err.Error())
 	}
 
-	return NewListResult(heroes)
+	return models.NewListResult(heroes)
 }

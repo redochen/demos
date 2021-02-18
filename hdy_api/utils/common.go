@@ -2,15 +2,16 @@ package utils
 
 import (
 	"errors"
+	"net/http"
+	"time"
+
 	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
 	. "github.com/redochen/demos/hdy_api/models"
 	"github.com/redochen/demos/hdy_api/status"
 	"github.com/redochen/tools/cache"
-	. "github.com/redochen/tools/log"
-	. "github.com/redochen/tools/string"
-	"net/http"
-	"time"
+	"github.com/redochen/tools/log"
+	CcStr "github.com/redochen/tools/string"
 )
 
 const (
@@ -24,25 +25,25 @@ const (
 	paramTimeoutSeconds = "timeoutSeconds"
 	paramPageIndex      = "pageIndex"
 	paramPageSize       = "pageSize"
-	paramCaptchaId      = "captchaId"
+	paramCaptchaID      = "captchaId"
 	paramCaptchaCode    = "captchaCode"
 	paramCaptchaLength  = "length"
-	paramUserGuid       = "userGuid"
+	paramUserGUID       = "userGuid"
 )
 
-//解析日期时间
+//ParseDateTime 解析日期时间
 func ParseDateTime(str string, format ...string) time.Time {
 	fmt := GetDateTimeFormat(format...)
 	return CcStr.ParseTime(str, fmt, false)
 }
 
-//输出日期时间
+//FormatDateTime 输出日期时间
 func FormatDateTime(t time.Time, format ...string) string {
 	fmt := GetDateTimeFormat(format...)
 	return CcStr.FormatTime(t, fmt)
 }
 
-//获取日期时间格式
+//GetDateTimeFormat 获取日期时间格式
 func GetDateTimeFormat(format ...string) string {
 	fmt := DefaultDateTimeFormat
 
@@ -53,7 +54,7 @@ func GetDateTimeFormat(format ...string) string {
 	return fmt
 }
 
-//获取分页查询的offset和limit
+//GetOffsetAndLimit 获取分页查询的offset和limit
 func GetOffsetAndLimit(pageIndex, pageSize int) (offset, limit int) {
 	if pageSize <= 0 {
 		pageSize = defaultPageSize
@@ -69,7 +70,7 @@ func GetOffsetAndLimit(pageIndex, pageSize int) (offset, limit int) {
 	return
 }
 
-//获取请求参数
+//GetRequestParameter 获取请求参数
 func GetRequestParameter(ctx *gin.Context, name string) string {
 	if nil == ctx || name == "" {
 		return ""
@@ -78,7 +79,7 @@ func GetRequestParameter(ctx *gin.Context, name string) string {
 	return CcStr.FirstValid(ctx.Query(name), ctx.PostForm(name))
 }
 
-//获取超时秒数参数
+//GetTimeoutParameter 获取超时秒数参数
 func GetTimeoutParameter(ctx *gin.Context) (seconds int) {
 	seconds = CcStr.ParseInt(GetRequestParameter(ctx, paramTimeoutSeconds))
 	if seconds <= 0 {
@@ -88,7 +89,7 @@ func GetTimeoutParameter(ctx *gin.Context) (seconds int) {
 	return
 }
 
-//获取分页参数
+//GetPageParameters 获取分页参数
 func GetPageParameters(ctx *gin.Context) (pageIndex int, pageSize int) {
 	pageIndex = CcStr.ParseInt(GetRequestParameter(ctx, paramPageIndex))
 	pageSize = CcStr.ParseInt(GetRequestParameter(ctx, paramPageSize))
@@ -96,15 +97,15 @@ func GetPageParameters(ctx *gin.Context) (pageIndex int, pageSize int) {
 	return
 }
 
-//获取验证码参数
-func GetCaptchaParameters(ctx *gin.Context) (captchaId string, captchaCode string) {
-	captchaId = GetRequestParameter(ctx, paramCaptchaId)
+//GetCaptchaParameters 获取验证码参数
+func GetCaptchaParameters(ctx *gin.Context) (captchaID string, captchaCode string) {
+	captchaID = GetRequestParameter(ctx, paramCaptchaID)
 	captchaCode = GetRequestParameter(ctx, paramCaptchaCode)
 
 	return
 }
 
-//获取验证码长度参数
+//GetCaptchaLengthParameter 获取验证码长度参数
 func GetCaptchaLengthParameter(ctx *gin.Context) (length int) {
 	length = CcStr.ParseInt(GetRequestParameter(ctx, paramCaptchaLength))
 	if length <= 0 {
@@ -114,14 +115,14 @@ func GetCaptchaLengthParameter(ctx *gin.Context) (length int) {
 	return
 }
 
-//获取用户Guid参数
-func GetUserGuidParameter(ctx *gin.Context) (userGuid string) {
-	userGuid = GetRequestParameter(ctx, paramUserGuid)
+//GetUserGUIDParameter 获取用户Guid参数
+func GetUserGUIDParameter(ctx *gin.Context) (userGUID string) {
+	userGUID = GetRequestParameter(ctx, paramUserGUID)
 
 	return
 }
 
-//等待响应结果
+//WaitAndResponse 等待响应结果
 func WaitAndResponse(ctx *gin.Context, ch <-chan interface{}, name string) {
 	var result interface{}
 
@@ -134,40 +135,40 @@ func WaitAndResponse(ctx *gin.Context, ch <-chan interface{}, name string) {
 		break
 	case <-time.After(seconds * time.Second):
 		result = NewResult(status.Timeout)
-		Logger.Errorf("[%s] %s", name, status.GetErrMessage(status.Timeout))
+		log.Errorf("[%s] %s", name, status.GetErrMessage(status.Timeout))
 		break
 	}
 
 	elapsed := time.Since(start)
-	Logger.Debugf("[%s] spent %f seconds", name, elapsed.Seconds())
+	log.Debugf("[%s] spent %f seconds", name, elapsed.Seconds())
 
 	ctx.JSON(http.StatusOK, result)
 }
 
-//检验验证码
-func VerifyCaptcha(captchaId, captchaCode string, mustHasId, mustHasCode bool) error {
+//VerifyCaptcha 检验验证码
+func VerifyCaptcha(captchaID, captchaCode string, mustHasID, mustHasCode bool) error {
 	if captchaCode == "" {
 		if mustHasCode {
 			return errors.New("invalid captchaCode")
-		} else {
-			return nil
 		}
+
+		return nil
 	}
 
-	if captchaId != "" {
-		if ok := captcha.VerifyString(captchaId, captchaCode); ok {
+	if captchaID != "" {
+		if ok := captcha.VerifyString(captchaID, captchaCode); ok {
 			return nil
-		} else {
-			return errors.New("wrong captchaCode")
 		}
-	} else if mustHasId {
+
+		return errors.New("wrong captchaCode")
+	} else if mustHasID {
 		return errors.New("invalid captchaId")
 	}
 
 	//读取缓存
 	if value := cache.GetString(captchaCode); value != "" {
 		return nil
-	} else {
-		return errors.New("wrong captchaCode")
 	}
+
+	return errors.New("wrong captchaCode")
 }

@@ -2,13 +2,15 @@ package access
 
 import (
 	"errors"
-	"github.com/go-xorm/xorm"
-	. "github.com/redochen/demos/hdy_api/entities"
-	"github.com/redochen/demos/hdy_api/utils"
 	"math"
+
+	"github.com/go-xorm/xorm"
+	"github.com/redochen/demos/hdy_api/entities"
+	"github.com/redochen/demos/hdy_api/utils"
 )
 
-func AddGameRole(role *GameRoleEntity) (int64, error) {
+//AddGameRole 添加游戏角色
+func AddGameRole(role *entities.GameRoleEntity) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
@@ -20,18 +22,19 @@ func AddGameRole(role *GameRoleEntity) (int64, error) {
 	return engine.InsertOne(role)
 }
 
-func GetGameRoles(userId int64, pageIndex, pageSize int) (roles []*GameRoleEntity, totalCount, pageCount int64, err error) {
+//GetGameRoles 获取游戏角色
+func GetGameRoles(userID int64, pageIndex, pageSize int) (roles []*entities.GameRoleEntity, totalCount, pageCount int64, err error) {
 	if nil == engine {
 		err = errors.New("engine not initialized")
 		return
 	}
 
-	if userId <= 0 {
+	if userID <= 0 {
 		err = errors.New("invalid user ID")
 		return
 	}
 
-	role := new(GameRoleEntity)
+	role := new(entities.GameRoleEntity)
 	offset, limit := utils.GetOffsetAndLimit(pageSize, pageIndex)
 
 	totalCount, err = engine.Count(role)
@@ -44,14 +47,14 @@ func GetGameRoles(userId int64, pageIndex, pageSize int) (roles []*GameRoleEntit
 	}
 
 	var rows *xorm.Rows
-	rows, err = engine.Where("user_id = ?", userId).Limit(limit, offset).Rows(role)
+	rows, err = engine.Where("user_id = ?", userID).Limit(limit, offset).Rows(role)
 	if err != nil {
 		return
 	}
 
 	defer rows.Close()
 
-	roles = make([]*GameRoleEntity, 0)
+	roles = make([]*entities.GameRoleEntity, 0)
 
 	for rows.Next() {
 		err = rows.Scan(role)
@@ -62,7 +65,7 @@ func GetGameRoles(userId int64, pageIndex, pageSize int) (roles []*GameRoleEntit
 		roles = append(roles, role)
 
 		//注意：这里应重新分配内存
-		role = new(GameRoleEntity)
+		role = new(entities.GameRoleEntity)
 	}
 
 	return

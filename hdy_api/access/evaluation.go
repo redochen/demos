@@ -2,14 +2,15 @@ package access
 
 import (
 	"errors"
-	"github.com/go-xorm/xorm"
-	. "github.com/redochen/demos/hdy_api/entities"
-	"github.com/redochen/demos/hdy_api/utils"
 	"math"
+
+	"github.com/go-xorm/xorm"
+	"github.com/redochen/demos/hdy_api/entities"
+	"github.com/redochen/demos/hdy_api/utils"
 )
 
-//添加评价
-func AddEvaluation(evaluation *EvaluationEntity) (int64, error) {
+//AddEvaluation 添加评价
+func AddEvaluation(evaluation *entities.EvaluationEntity) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
@@ -18,15 +19,15 @@ func AddEvaluation(evaluation *EvaluationEntity) (int64, error) {
 		return 0, errors.New("invalid parameter")
 	}
 
-	if evaluation.InvitationId <= 0 {
+	if evaluation.InvitationID <= 0 {
 		return 0, errors.New("invalid invitation ID")
 	}
 
 	return engine.InsertOne(evaluation)
 }
 
-//更新评价
-func UpdateEvaluation(evaluation *EvaluationEntity) (int64, error) {
+//UpdateEvaluation 更新评价
+func UpdateEvaluation(evaluation *entities.EvaluationEntity) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
@@ -35,26 +36,26 @@ func UpdateEvaluation(evaluation *EvaluationEntity) (int64, error) {
 		return 0, errors.New("invalid parameter")
 	}
 
-	if evaluation.Id <= 0 {
+	if evaluation.ID <= 0 {
 		return 0, errors.New("invalid evaluation ID")
 	}
 
-	return engine.Id(evaluation.Id).Update(evaluation)
+	return engine.Id(evaluation.ID).Update(evaluation)
 }
 
-//获取评价列表
-func GetEvaluations(invitationId int64, status, pageIndex, pageSize int) (evaluations []*EvaluationEntity, totalCount, pageCount int64, err error) {
+//GetEvaluations 获取评价列表
+func GetEvaluations(invitationID int64, status, pageIndex, pageSize int) (evaluations []*entities.EvaluationEntity, totalCount, pageCount int64, err error) {
 	if nil == engine {
 		err = errors.New("engine not initialized")
 		return
 	}
 
-	if invitationId <= 0 {
+	if invitationID <= 0 {
 		err = errors.New("invalid invitation ID")
 		return
 	}
 
-	evaluation := new(EvaluationEntity)
+	evaluation := new(entities.EvaluationEntity)
 	offset, limit := utils.GetOffsetAndLimit(pageIndex, pageSize)
 
 	totalCount, err = engine.Count(evaluation)
@@ -67,14 +68,14 @@ func GetEvaluations(invitationId int64, status, pageIndex, pageSize int) (evalua
 	}
 
 	var rows *xorm.Rows
-	rows, err = engine.Where("invitation_id", invitationId).Limit(limit, offset).Rows(evaluation)
+	rows, err = engine.Where("invitation_id", invitationID).Limit(limit, offset).Rows(evaluation)
 	if err != nil {
 		return
 	}
 
 	defer rows.Close()
 
-	evaluations = make([]*EvaluationEntity, 0)
+	evaluations = make([]*entities.EvaluationEntity, 0)
 
 	for rows.Next() {
 		err = rows.Scan(evaluation)
@@ -85,22 +86,22 @@ func GetEvaluations(invitationId int64, status, pageIndex, pageSize int) (evalua
 		evaluations = append(evaluations, evaluation)
 
 		//注意：这里应重新分配内存
-		evaluation = new(EvaluationEntity)
+		evaluation = new(entities.EvaluationEntity)
 	}
 
 	return
 }
 
-//删除评价
-func DeleteEvaluation(evaluationId int64) (int64, error) {
+//DeleteEvaluation 删除评价
+func DeleteEvaluation(evaluationID int64) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
 
-	if evaluationId <= 0 {
+	if evaluationID <= 0 {
 		return 0, errors.New("invalid evaluation ID")
 	}
 
-	var evaluation EvaluationEntity
-	return engine.Id(evaluationId).Delete(&evaluation)
+	var evaluation entities.EvaluationEntity
+	return engine.Id(evaluationID).Delete(&evaluation)
 }

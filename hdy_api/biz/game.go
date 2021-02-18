@@ -2,144 +2,144 @@ package biz
 
 import (
 	"github.com/redochen/demos/hdy_api/access"
-	. "github.com/redochen/demos/hdy_api/models"
+	"github.com/redochen/demos/hdy_api/models"
 )
 
-//获取游戏列表
-func GetGames() ([]*GameModel, error) {
+//GetGames 获取游戏列表
+func GetGames() ([]*models.GameModel, error) {
 	entities, err := access.GetGames()
 	if err != nil {
 		return nil, err
 	}
 
-	models := make([]*GameModel, 0)
+	games := make([]*models.GameModel, 0)
 
 	for _, entity := range entities {
 		if nil == entity {
 			continue
 		}
 
-		model := &GameModel{
-			Id:   entity.Id,
+		game := &models.GameModel{
+			ID:   entity.ID,
 			Name: entity.Name,
 		}
 
-		if model != nil {
-			models = append(models, model)
+		if game != nil {
+			games = append(games, game)
 		}
 	}
 
-	return models, nil
+	return games, nil
 }
 
-//获取游戏大区列表
-func GetGameAreas(gameId int) ([]*AreaModel, error) {
-	entities, err := access.GetGameAreas(gameId)
+//GetGameAreas 获取游戏大区列表
+func GetGameAreas(gameID int) ([]*models.AreaModel, error) {
+	entities, err := access.GetGameAreas(gameID)
 	if err != nil {
 		return nil, err
 	}
 
-	models := make([]*AreaModel, 0)
+	gameAreas := make([]*models.AreaModel, 0)
 
 	for _, entity := range entities {
 		if nil == entity {
 			continue
 		}
 
-		model := &AreaModel{
-			Id:     entity.Id,
-			GameId: entity.GameId,
+		gameArea := &models.AreaModel{
+			ID:     entity.ID,
+			GameID: entity.GameID,
 			Name:   entity.Name,
 		}
 
-		if model != nil {
-			models = append(models, model)
+		if gameArea != nil {
+			gameAreas = append(gameAreas, gameArea)
 		}
 	}
 
-	return models, nil
+	return gameAreas, nil
 }
 
-//获取游戏服务器列表
-func GetGameServers(gameAreaId int) ([]*ServerModel, error) {
-	entities, err := access.GetGameServers(gameAreaId)
+//GetGameServers 获取游戏服务器列表
+func GetGameServers(gameAreaID int) ([]*models.ServerModel, error) {
+	entities, err := access.GetGameServers(gameAreaID)
 	if err != nil {
 		return nil, err
 	}
 
-	models := make([]*ServerModel, 0)
+	gameServers := make([]*models.ServerModel, 0)
 
 	for _, entity := range entities {
 		if nil == entity {
 			continue
 		}
 
-		model := &ServerModel{
-			Id:     entity.Id,
-			AreaId: entity.GameAreaId,
+		gameServer := &models.ServerModel{
+			ID:     entity.ID,
+			AreaID: entity.GameAreaID,
 			Name:   entity.Name,
 		}
 
-		if model != nil {
-			models = append(models, model)
+		if gameServer != nil {
+			gameServers = append(gameServers, gameServer)
 		}
 	}
 
-	return models, nil
+	return gameServers, nil
 }
 
-//获取游戏段位列表
-func GetGameDans(gameId int) ([]*DanModel, error) {
-	entities, err := access.GetGameDans(gameId)
+//GetGameDans 获取游戏段位列表
+func GetGameDans(gameID int) ([]*models.DanModel, error) {
+	entities, err := access.GetGameDans(gameID)
 	if err != nil {
 		return nil, err
 	}
 
-	models := make([]*DanModel, 0)
+	gameDans := make([]*models.DanModel, 0)
 
 	for _, entity := range entities {
 		if nil == entity {
 			continue
 		}
 
-		model := &DanModel{
-			Id:     entity.Id,
-			GameId: entity.GameId,
+		gameDan := &models.DanModel{
+			ID:     entity.ID,
+			GameID: entity.GameID,
 			Name:   entity.Name,
 		}
 
-		if model != nil {
-			models = append(models, model)
+		if gameDan != nil {
+			gameDans = append(gameDans, gameDan)
 		}
 	}
 
-	return models, nil
+	return gameDans, nil
 }
 
-//获取游戏英雄列表
-func GetGameHeroes(gameId int) ([]*HeroModel, error) {
-	entities, err := access.GetGameHeros(gameId)
+//GetGameHeroes 获取游戏英雄列表
+func GetGameHeroes(gameID int) ([]*models.HeroModel, error) {
+	entities, err := access.GetGameHeros(gameID)
 	if err != nil {
 		return nil, err
 	}
 
-	models := make([]*HeroModel, 0)
+	gameHeroes := make([]*models.HeroModel, 0)
 
 	for _, entity := range entities {
 		if nil == entity {
 			continue
 		}
 
-		model := &HeroModel{
-			Id:     entity.Id,
-			GameId: entity.GameId,
+		gameHero := &models.HeroModel{
+			ID:     entity.ID,
+			GameID: entity.GameID,
 			Name:   entity.Name,
 		}
 
-		if model != nil {
-			models = append(models, model)
+		if gameHero != nil {
+			gameHeroes = append(gameHeroes, gameHero)
 		}
 	}
 
-	return models, nil
+	return gameHeroes, nil
 }

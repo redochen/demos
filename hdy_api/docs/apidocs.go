@@ -1,19 +1,20 @@
 package docs
 
 import (
-	"github.com/dchest/captcha"
-	"github.com/gin-gonic/gin"
-	. "github.com/redochen/demos/hdy_api/models"
-	"github.com/redochen/demos/hdy_api/status"
-	"github.com/redochen/demos/hdy_api/utils"
-	. "github.com/redochen/tools/json"
 	"html/template"
 	"net/http"
 	"time"
+
+	"github.com/dchest/captcha"
+	"github.com/gin-gonic/gin"
+	"github.com/redochen/demos/hdy_api/models"
+	"github.com/redochen/demos/hdy_api/status"
+	"github.com/redochen/demos/hdy_api/utils"
+	"github.com/redochen/tools/json"
 )
 
-//接口文档列表
-func ApiDocs(ctx *gin.Context) {
+//APIDocs 接口文档列表
+func APIDocs(ctx *gin.Context) {
 	var list string
 
 	list += "<p><ul>"
@@ -50,8 +51,8 @@ func ApiDocs(ctx *gin.Context) {
 	})
 }
 
-//获取图片、音频验证码接口文档
-func ApidocCaptcha(ctx *gin.Context) {
+//APIDocCaptcha 获取图片、音频验证码接口文档
+func APIDocCaptcha(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "获取图片、音频验证码接口",
 		"url": template.HTML(`/api/captcha?length=6
@@ -64,41 +65,41 @@ func ApidocCaptcha(ctx *gin.Context) {
 	})
 }
 
-//获取短信验证码接口文档
-func ApiDocSmsCaptcha(ctx *gin.Context) {
+//APIDocSmsCaptcha 获取短信验证码接口文档
+func APIDocSmsCaptcha(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "获取短信验证码接口",
-		"url": template.HTML(`/api/captcha/sms?length=6&cellphone=13xxxxxxxxx&captchaId=xxxxxx&captchaCode=xxxxxx&timeoutSeconds=30
+		"url": template.HTML(`/api/captcha/sms?length=6&cellphone=13xxxxxxxxx&captchaID=xxxxxx&captchaCode=xxxxxx&timeoutSeconds=30
 			<br/><br/>length：验证码的长度，默认长度为8，可选参数。
 			<br/>cellphone：接收验证码的手机号，必填参数。
-			<br/>captchaId：图片、音频验证码的资源ID，可通过 <a href="/docs/captcha" target="_blank">图片、音频验证码接口</a> 获取，必填参数。
+			<br/>captchaID：图片、音频验证码的资源ID，可通过 <a href="/docs/captcha" target="_blank">图片、音频验证码接口</a> 获取，必填参数。
 			<br/>captchaCode：验证码，可通过查看验证码图片或收听验证码音频获取，必填参数。
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "GET",
 		"param":  "参见URL说明",
-		"result": template.HTML(CcJson.GetString(NewResult(status.Success)) + `<br/><br/><span style=color:red;">注意：验证码10分钟内有效，不可重复使用</span>`),
+		"result": template.HTML(json.GetString(models.NewResult(status.Success)) + `<br/><br/><span style=color:red;">注意：验证码10分钟内有效，不可重复使用</span>`),
 	})
 }
 
-//验证图片、音频验证码接口文档
-func ApiDocVerifyCaptcha(ctx *gin.Context) {
+//APIDocVerifyCaptcha 验证图片、音频验证码接口文档
+func APIDocVerifyCaptcha(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "验证图片、音频验证码接口",
-		"url": template.HTML(`/api/captcha/verify?captchaId=xxxxxx&captchaCode=xxxxxx
-			<br/><br/>captchaId：图片、音频验证码的资源ID，可通过 <a href="/docs/captcha" target="_blank">图片、音频验证码接口</a> 获取，必填参数。
+		"url": template.HTML(`/api/captcha/verify?captchaID=xxxxxx&captchaCode=xxxxxx
+			<br/><br/>captchaID：图片、音频验证码的资源ID，可通过 <a href="/docs/captcha" target="_blank">图片、音频验证码接口</a> 获取，必填参数。
 			<br/>captchaCode：验证码，可通过查看验证码图片或收听验证码音频获取，必填参数。`),
 		"method": "POST",
 		"param":  "参见URL说明",
-		"result": CcJson.GetString(NewResult(status.Success)),
+		"result": json.GetString(models.NewResult(status.Success)),
 	})
 }
 
-//图片、音频验证码链接URL地址说明文档
-func ApiDocCaptchaResource(ctx *gin.Context) {
+//APIDocCaptchaResource 图片、音频验证码链接URL地址说明文档
+func APIDocCaptchaResource(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "图片、音频验证码链接URL地址",
-		"url": template.HTML(`/captcha/captchaId.png 或 /captcha/captchaId.wav
-			<br/><br/>captchaId：图片、音频验证码的资源ID，可通过 <a href="/docs/captcha" target="_blank">图片、音频验证码接口</a> 获取，必填参数。`),
+		"url": template.HTML(`/captcha/captchaID.png 或 /captcha/captchaID.wav
+			<br/><br/>captchaID：图片、音频验证码的资源ID，可通过 <a href="/docs/captcha" target="_blank">图片、音频验证码接口</a> 获取，必填参数。`),
 		"method": "GET",
 		"param":  "参见URL说明",
 		"result": template.HTML(`图片或音频资源，详情请参考 <a href="/docs/captcha/sample" target="_blank">图片、音频验证码示例</a>。
@@ -107,92 +108,92 @@ func ApiDocCaptchaResource(ctx *gin.Context) {
 	})
 }
 
-//验证码示例文档
-func ApiDocCaptchaSample(ctx *gin.Context) {
+//APIDocCaptchaSample 验证码示例文档
+func APIDocCaptchaSample(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "captcha_sample.tmpl", gin.H{
-		"CaptchaId": captcha.New(),
+		"CaptchaID": captcha.New(),
 	})
 }
 
-//获取游戏列表接口文档
-func ApiDocGames(ctx *gin.Context) {
+//APIDocGames 获取游戏列表接口文档
+func APIDocGames(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "获取游戏列表接口",
 		"url": template.HTML(`/api/games?timeoutSeconds=30
 			<br/><br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "GET",
 		"param":  "参见URL说明",
-		"result": CcJson.GetString(NewListResult(getGames())),
+		"result": json.GetString(models.NewListResult(getGames())),
 	})
 }
 
-//获取游戏大区列表接口文档
-func ApiDocGameAreas(ctx *gin.Context) {
+//APIDocGameAreas 获取游戏大区列表接口文档
+func APIDocGameAreas(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "获取游戏大区列表接口",
-		"url": template.HTML(`/api/game/areas?gamdId=10001&timeoutSeconds=30
-			<br/><br/>gamdId：游戏ID，可通过 <a href="/docs/games" target="_blank">游戏列表接口</a> 获取，必填参数。
+		"url": template.HTML(`/api/game/areas?gamdID=10001&timeoutSeconds=30
+			<br/><br/>gamdID：游戏ID，可通过 <a href="/docs/games" target="_blank">游戏列表接口</a> 获取，必填参数。
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "GET",
 		"param":  "参见URL说明",
-		"result": CcJson.GetString(NewListResult(getGameAreas())),
+		"result": json.GetString(models.NewListResult(getGameAreas())),
 	})
 }
 
-//获取游戏服务器列表接口文档
-func ApiDocGameServers(ctx *gin.Context) {
+//APIDocGameServers 获取游戏服务器列表接口文档
+func APIDocGameServers(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "获取游戏服务器列表接口",
-		"url": template.HTML(`/api/game/servers?areaId=10001&timeoutSeconds=30
-			<br/><br/>areaId：游戏大区ID，可通过 <a href="/docs/game/areas" target="_blank">游戏大区列表接口</a> 获取，必填参数。
+		"url": template.HTML(`/api/game/servers?areaID=10001&timeoutSeconds=30
+			<br/><br/>areaID：游戏大区ID，可通过 <a href="/docs/game/areas" target="_blank">游戏大区列表接口</a> 获取，必填参数。
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "GET",
 		"param":  "参见URL说明",
-		"result": CcJson.GetString(NewListResult(getGameServers())),
+		"result": json.GetString(models.NewListResult(getGameServers())),
 	})
 }
 
-//获取游戏段位列表接口文档
-func ApiDocGameDans(ctx *gin.Context) {
+//APIDocGameDans 获取游戏段位列表接口文档
+func APIDocGameDans(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "获取游戏段位列表接口",
-		"url": template.HTML(`/api/game/dans?gamdId=10001&timeoutSeconds=30
-			<br/><br/>gamdId：游戏ID，可通过 <a href="/docs/games" target="_blank">游戏列表接口</a> 获取，必填参数。
+		"url": template.HTML(`/api/game/dans?gamdID=10001&timeoutSeconds=30
+			<br/><br/>gamdID：游戏ID，可通过 <a href="/docs/games" target="_blank">游戏列表接口</a> 获取，必填参数。
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "GET",
 		"param":  "无参见URL说明",
-		"result": CcJson.GetString(NewListResult(getGameDans())),
+		"result": json.GetString(models.NewListResult(getGameDans())),
 	})
 }
 
-//获取游戏英雄列表接口文档
-func ApiDocGameHeroes(ctx *gin.Context) {
+//APIDocGameHeroes 获取游戏英雄列表接口文档
+func APIDocGameHeroes(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "获取游戏英雄列表接口",
-		"url": template.HTML(`/api/game/heroes?gamdId=10001&timeoutSeconds=30
-			<br/><br/>gamdId：游戏ID，可通过 <a href="/docs/games" target="_blank">游戏列表接口</a> 获取，必填参数。
+		"url": template.HTML(`/api/game/heroes?gamdID=10001&timeoutSeconds=30
+			<br/><br/>gamdID：游戏ID，可通过 <a href="/docs/games" target="_blank">游戏列表接口</a> 获取，必填参数。
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "GET",
 		"param":  "参见URL说明",
-		"result": CcJson.GetString(NewListResult(getGameHeroes())),
+		"result": json.GetString(models.NewListResult(getGameHeroes())),
 	})
 }
 
-//注册接口文档
-func ApiDocRegister(ctx *gin.Context) {
+//APIDocRegister 注册接口文档
+func APIDocRegister(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "用户注册接口",
 		"url": template.HTML(`/api/user/register?captchaCode=xxxxxx&timeoutSeconds=30
 			<br/><br/>captchaCode：短信验证码，可通过 <a href="/docs/captcha/sms" target="_blank">短信验证码接口</a> 获取，可选参数。<span style='color:red;'>如果传递有效的手机号，则必须传入该参数。</span>
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "POST",
-		"param":  CcJson.GetString(getUser(false, true)),
-		"result": CcJson.GetString(NewRegisterResult("xxxxxx")),
+		"param":  json.GetString(getUser(false, true)),
+		"result": json.GetString(models.NewRegisterResult("xxxxxx")),
 	})
 }
 
-//登录接口文档
-func ApiDocLogin(ctx *gin.Context) {
+//APIDocLogin 登录接口文档
+func APIDocLogin(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "用户登录接口",
 		"url": template.HTML(`/api/user/login?openid=xxxxxx&timeoutSeconds=30 或者 /api/user/login?account=xxxxxx&password=xxxxxx&timeoutSeconds=30
@@ -202,25 +203,25 @@ func ApiDocLogin(ctx *gin.Context) {
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "GET",
 		"param":  "参见URL说明",
-		"result": CcJson.GetString(NewUserResult(getUser(true, true))),
+		"result": json.GetString(models.NewUserResult(getUser(true, true))),
 	})
 }
 
-//更新用户接口文档
-func ApiDocUpdateUser(ctx *gin.Context) {
+//APIDocUpdateUser 更新用户接口文档
+func APIDocUpdateUser(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "更新用户信息接口",
 		"url": template.HTML(`/api/user/update?captchaCode=xxxxxx&timeoutSeconds=30
 			<br/><br/>captchaCode：短信验证码，可通过 <a href="/docs/captcha/sms" target="_blank">短信验证码接口</a> 获取，可选参数。<span style='color:red;'>如果手机号有变更，则必须传入该参数。</span>
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "POST",
-		"param":  CcJson.GetString(getUser(false, true)),
-		"result": CcJson.GetString(NewResult(status.Success)),
+		"param":  json.GetString(getUser(false, true)),
+		"result": json.GetString(models.NewResult(status.Success)),
 	})
 }
 
-//获取用户详情接口文档
-func ApiDocGetUser(ctx *gin.Context) {
+//APIDocGetUser 获取用户详情接口文档
+func APIDocGetUser(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "获取用户详情接口",
 		"url": template.HTML(`/api/user/details?userGuid=xxxxxx&timeoutSeconds=30
@@ -228,12 +229,12 @@ func ApiDocGetUser(ctx *gin.Context) {
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "GET",
 		"param":  "参见URL说明",
-		"result": CcJson.GetString(NewUserResult(getUser(true, true))),
+		"result": json.GetString(models.NewUserResult(getUser(true, true))),
 	})
 }
 
-//获取用户列表接口文档
-func ApiDocGetUsers(ctx *gin.Context) {
+//APIDocGetUsers 获取用户列表接口文档
+func APIDocGetUsers(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "api_doc.tmpl", gin.H{
 		"title": "获取用户列表接口",
 		"url": template.HTML(`/api/users?pageIndex=1&pageSize=10&timeoutSeconds=30
@@ -242,57 +243,57 @@ func ApiDocGetUsers(ctx *gin.Context) {
 			<br/>timeoutSeconds：接口超时秒数，可选参数，默认为30秒超时。`),
 		"method": "GET",
 		"param":  "参见URL说明",
-		"result": CcJson.GetString(NewListResult(getUsers())),
+		"result": json.GetString(models.NewListResult(getUsers())),
 	})
 }
 
-func getGames() []*GameModel {
-	games := make([]*GameModel, 0)
+func getGames() []*models.GameModel {
+	games := make([]*models.GameModel, 0)
 
-	games = append(games, &GameModel{Id: 10001, Name: "游戏1"})
-	games = append(games, &GameModel{Id: 10002, Name: "游戏2"})
+	games = append(games, &models.GameModel{ID: 10001, Name: "游戏1"})
+	games = append(games, &models.GameModel{ID: 10002, Name: "游戏2"})
 
 	return games
 }
 
-func getGameAreas() []*AreaModel {
-	areas := make([]*AreaModel, 0)
+func getGameAreas() []*models.AreaModel {
+	areas := make([]*models.AreaModel, 0)
 
-	areas = append(areas, &AreaModel{Id: 20001, GameId: 10001, Name: "游戏大区1"})
-	areas = append(areas, &AreaModel{Id: 20002, GameId: 10001, Name: "游戏大区2"})
+	areas = append(areas, &models.AreaModel{ID: 20001, GameID: 10001, Name: "游戏大区1"})
+	areas = append(areas, &models.AreaModel{ID: 20002, GameID: 10001, Name: "游戏大区2"})
 
 	return areas
 }
 
-func getGameServers() []*ServerModel {
-	servers := make([]*ServerModel, 0)
+func getGameServers() []*models.ServerModel {
+	servers := make([]*models.ServerModel, 0)
 
-	servers = append(servers, &ServerModel{Id: 30001, AreaId: 20001, Name: "游戏服务器1"})
-	servers = append(servers, &ServerModel{Id: 30002, AreaId: 20001, Name: "游戏服务器2"})
+	servers = append(servers, &models.ServerModel{ID: 30001, AreaID: 20001, Name: "游戏服务器1"})
+	servers = append(servers, &models.ServerModel{ID: 30002, AreaID: 20001, Name: "游戏服务器2"})
 
 	return servers
 }
 
-func getGameDans() []*DanModel {
-	dans := make([]*DanModel, 0)
+func getGameDans() []*models.DanModel {
+	dans := make([]*models.DanModel, 0)
 
-	dans = append(dans, &DanModel{Id: 20001, GameId: 10001, Name: "段位1"})
-	dans = append(dans, &DanModel{Id: 20002, GameId: 10001, Name: "段位2"})
+	dans = append(dans, &models.DanModel{ID: 20001, GameID: 10001, Name: "段位1"})
+	dans = append(dans, &models.DanModel{ID: 20002, GameID: 10001, Name: "段位2"})
 
 	return dans
 }
 
-func getGameHeroes() []*HeroModel {
-	heroes := make([]*HeroModel, 0)
+func getGameHeroes() []*models.HeroModel {
+	heroes := make([]*models.HeroModel, 0)
 
-	heroes = append(heroes, &HeroModel{Id: 20001, GameId: 10001, Name: "英雄1"})
-	heroes = append(heroes, &HeroModel{Id: 20002, GameId: 10001, Name: "英雄2"})
+	heroes = append(heroes, &models.HeroModel{ID: 20001, GameID: 10001, Name: "英雄1"})
+	heroes = append(heroes, &models.HeroModel{ID: 20002, GameID: 10001, Name: "英雄2"})
 
 	return heroes
 }
 
-func getUsers() []*UserModel {
-	users := make([]*UserModel, 0)
+func getUsers() []*models.UserModel {
+	users := make([]*models.UserModel, 0)
 
 	users = append(users, getUser(true, false))
 	users = append(users, getUser(true, false))
@@ -300,8 +301,8 @@ func getUsers() []*UserModel {
 	return users
 }
 
-func getUser(isResult bool, details bool) *UserModel {
-	user := &UserModel{
+func getUser(isResult bool, details bool) *models.UserModel {
+	user := &models.UserModel{
 		Account:   "xxxxxx",
 		NickName:  "xxxxxx",
 		Avator:    "http://www.url/image",
@@ -317,7 +318,7 @@ func getUser(isResult bool, details bool) *UserModel {
 	}
 
 	if isResult {
-		user.Guid = "xxxxxx"
+		user.GUID = "xxxxxx"
 		user.CreatedAt = utils.FormatDateTime(time.Now())
 		user.UpdatedAt = utils.FormatDateTime(time.Now())
 		user.LastLogin = utils.FormatDateTime(time.Now())

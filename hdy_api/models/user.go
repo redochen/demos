@@ -4,7 +4,7 @@ import (
 	"github.com/redochen/demos/hdy_api/status"
 )
 
-//用户
+//UserModel 用户
 type UserModel struct {
 	BaseModel
 	Account   string `json:"account"`             //账号
@@ -21,29 +21,29 @@ type UserModel struct {
 	LastLogin string `json:"lastLogin,omitempty"` //最后登录时间，格式为:yyyy-MM-dd HH:mm:ss
 }
 
-//注册结果
+//RegisterResult 注册结果
 type RegisterResult struct {
 	BaseResult
-	Guid string `json:"guid,omitempty"` //惟一标识
+	GUID string `json:"guid,omitempty"` //惟一标识
 }
 
-//获取注册结果
+//NewRegisterResult 获取注册结果
 func NewRegisterResult(guid string) *RegisterResult {
 	result := &RegisterResult{
-		Guid: guid,
+		GUID: guid,
 	}
 
 	result.SetError(status.Success)
 	return result
 }
 
-//用户结果
+//UserResult 用户结果
 type UserResult struct {
 	BaseResult
-	User *UserModel `json:"user, omitempty"` //用户信息
+	User *UserModel `json:"user,omitempty"` //用户信息
 }
 
-//获取登录结果
+//NewUserResult 获取登录结果
 func NewUserResult(user *UserModel) *UserResult {
 	result := &UserResult{
 		User: user,

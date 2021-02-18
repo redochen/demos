@@ -2,16 +2,17 @@ package access
 
 import (
 	"errors"
-	"github.com/go-xorm/xorm"
-	. "github.com/redochen/demos/hdy_api/entities"
-	"github.com/redochen/demos/hdy_api/utils"
-	. "github.com/redochen/tools/string"
 	"math"
 	"time"
+
+	"github.com/go-xorm/xorm"
+	"github.com/redochen/demos/hdy_api/entities"
+	"github.com/redochen/demos/hdy_api/utils"
+	CcStr "github.com/redochen/tools/string"
 )
 
-//添加用户
-func AddUser(user *UserEntity) (int64, error) {
+//AddUser 添加用户
+func AddUser(user *entities.UserEntity) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
@@ -23,8 +24,8 @@ func AddUser(user *UserEntity) (int64, error) {
 	return engine.InsertOne(user)
 }
 
-//更新用户信息
-func UpdateUser(user *UserEntity) (int64, error) {
+//UpdateUser 更新用户信息
+func UpdateUser(user *entities.UserEntity) (int64, error) {
 	if nil == engine {
 		return 0, errors.New("engine not initialized")
 	}
@@ -33,21 +34,21 @@ func UpdateUser(user *UserEntity) (int64, error) {
 		return 0, errors.New("invalid parameter")
 	}
 
-	if user.Id <= 0 {
+	if user.ID <= 0 {
 		return 0, errors.New("invalid user ID")
 	}
 
-	return engine.Id(user.Id).Update(user)
+	return engine.Id(user.ID).Update(user)
 }
 
-//获取用户列表
-func GetUsers(pageIndex, pageSize int) (users []*UserEntity, totalCount, pageCount int64, err error) {
+//GetUsers 获取用户列表
+func GetUsers(pageIndex, pageSize int) (users []*entities.UserEntity, totalCount, pageCount int64, err error) {
 	if nil == engine {
 		err = errors.New("engine not initialized")
 		return
 	}
 
-	user := new(UserEntity)
+	user := new(entities.UserEntity)
 	offset, limit := utils.GetOffsetAndLimit(pageIndex, pageSize)
 
 	totalCount, err = engine.Count(user)
@@ -67,7 +68,7 @@ func GetUsers(pageIndex, pageSize int) (users []*UserEntity, totalCount, pageCou
 
 	defer rows.Close()
 
-	users = make([]*UserEntity, 0)
+	users = make([]*entities.UserEntity, 0)
 
 	for rows.Next() {
 		err = rows.Scan(user)
@@ -78,28 +79,28 @@ func GetUsers(pageIndex, pageSize int) (users []*UserEntity, totalCount, pageCou
 		users = append(users, user)
 
 		//注意：这里应重新分配内存
-		user = new(UserEntity)
+		user = new(entities.UserEntity)
 	}
 
 	return
 }
 
-//更新用户登录时间
-func UpdateUserLoginTime(userId int64) error {
+//UpdateUserLoginTime 更新用户登录时间
+func UpdateUserLoginTime(userID int64) error {
 	if nil == engine {
 		return errors.New("engine not initialized")
 	}
 
-	if userId <= 0 {
+	if userID <= 0 {
 		return errors.New("invalid user ID")
 	}
 
-	_, err := engine.Id(userId).Cols("login_at").Update(&UserEntity{LoginAt: time.Now()})
+	_, err := engine.Id(userID).Cols("login_at").Update(&entities.UserEntity{LoginAt: time.Now()})
 	return err
 }
 
-//根据账号获取用户
-func GetUserByAccount(account string, checkPass bool, password ...string) (*UserEntity, error) {
+//GetUserByAccount 根据账号获取用户
+func GetUserByAccount(account string, checkPass bool, password ...string) (*entities.UserEntity, error) {
 	if nil == engine {
 		return nil, errors.New("engine not initialized")
 	}
@@ -116,7 +117,7 @@ func GetUserByAccount(account string, checkPass bool, password ...string) (*User
 		}
 	}
 
-	var user UserEntity
+	var user entities.UserEntity
 	var err error
 
 	if checkPass {
@@ -128,24 +129,24 @@ func GetUserByAccount(account string, checkPass bool, password ...string) (*User
 	return &user, err
 }
 
-//根据微信OpenID获取用户
-func GetUserByOpenId(openId string) (*UserEntity, error) {
+//GetUserByOpenID 根据微信OpenID获取用户
+func GetUserByOpenID(openID string) (*entities.UserEntity, error) {
 	if nil == engine {
 		return nil, errors.New("engine not initialized")
 	}
 
-	if openId == "" {
+	if openID == "" {
 		return nil, errors.New("invalid OpenID")
 	}
 
-	var user UserEntity
-	_, err := engine.Where("wechat_openid = ?", openId).Limit(1).Get(&user)
+	var user entities.UserEntity
+	_, err := engine.Where("wechat_openid = ?", openID).Limit(1).Get(&user)
 
 	return &user, err
 }
 
-//根据GUID获取用户
-func GetUserByGuid(guid string) (*UserEntity, error) {
+//GetUserByGUID 根据GUID获取用户
+func GetUserByGUID(guid string) (*entities.UserEntity, error) {
 	if nil == engine {
 		return nil, errors.New("engine not initialized")
 	}
@@ -154,25 +155,25 @@ func GetUserByGuid(guid string) (*UserEntity, error) {
 		return nil, errors.New("invalid user Guid")
 	}
 
-	var user UserEntity
+	var user entities.UserEntity
 	_, err := engine.Where("guid = ?", guid).Limit(1).Get(&user)
 
 	return &user, err
 }
 
-//根据GUID或微信OpenID获取用户
-func GetUserByGuidOrOpenId(guidOrOpenId string) (*UserEntity, error) {
+//GetUserByGUIDOrOpenID 根据GUID或微信OpenID获取用户
+func GetUserByGUIDOrOpenID(guidOrOpenID string) (*entities.UserEntity, error) {
 	if nil == engine {
 		return nil, errors.New("engine not initialized")
 	}
 
-	if guidOrOpenId == "" {
+	if guidOrOpenID == "" {
 		return nil, errors.New("invalid parameter")
 	}
 
-	var user UserEntity
-	_, err := engine.Where("guid = ?", guidOrOpenId).
-		Or("wechat_openid = ?", guidOrOpenId).Limit(1).Get(&user)
+	var user entities.UserEntity
+	_, err := engine.Where("guid = ?", guidOrOpenID).
+		Or("wechat_openid = ?", guidOrOpenID).Limit(1).Get(&user)
 
 	return &user, err
 }

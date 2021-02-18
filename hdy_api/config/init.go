@@ -2,8 +2,9 @@ package config
 
 import (
 	"fmt"
-	. "github.com/redochen/tools/config"
 	"log"
+
+	"github.com/redochen/tools/config"
 )
 
 const (
@@ -32,7 +33,7 @@ const (
 
 	//sms配置节
 	sectionSms     = "sms"
-	optionSmsUrl   = "url"
+	optionSmsURL   = "url"
 	optionSmsToken = "token"
 )
 
@@ -48,49 +49,49 @@ var (
 )
 
 func init() {
-	if nil == Conf || !Conf.IsValid() {
+	if nil == config.Conf || !config.Conf.IsValid() {
 		return
 	}
 
 	var err error
 
-	ServerPort = Conf.IntEx(sectionSvr, optionSvrPort, defaultServerPort)
-	ServerToken, _ = Conf.String(sectionSvr, optionSvrToken)
+	ServerPort = config.Conf.IntEx(sectionSvr, optionSvrPort, defaultServerPort)
+	ServerToken, _ = config.Conf.String(sectionSvr, optionSvrToken)
 
-	if !Conf.HasSection(sectionDb) {
+	if !config.Conf.HasSection(sectionDb) {
 		log.Fatal("[config.init] Can NOT read database section\n")
 	}
 
-	DataDriver, err = Conf.String(sectionDb, optionDbDriver)
+	DataDriver, err = config.Conf.String(sectionDb, optionDbDriver)
 	if err != nil || DataDriver == "" {
-		log.Fatalf("[config.init] Can NOT read database driver option\n", err)
+		log.Fatalf("[config.init] Can NOT read database driver option:\n%v", err)
 	}
 
-	dbHost, err := Conf.String(sectionDb, optionDbHost)
+	dbHost, err := config.Conf.String(sectionDb, optionDbHost)
 	if err != nil || dbHost == "" {
-		log.Fatalf("[config.init] Can NOT read database host option\n", err)
+		log.Fatalf("[config.init] Can NOT read database host option:\n%v", err)
 	}
 
-	dbPort, _ := Conf.Int(sectionDb, optionDbPort)
+	dbPort, _ := config.Conf.Int(sectionDb, optionDbPort)
 	if dbPort == 0 {
 		dbPort = defaultMysqlPort
 	}
 
-	dbName, err := Conf.String(sectionDb, optionDbDbName)
+	dbName, err := config.Conf.String(sectionDb, optionDbDbName)
 	if err != nil || dbName == "" {
-		log.Fatalf("[config.init] Can NOT read database name option\n", err)
+		log.Fatalf("[config.init] Can NOT read database name option:\n%v", err)
 	}
 
-	dbCharset, _ := Conf.String(sectionDb, optionDbCharset)
+	dbCharset, _ := config.Conf.String(sectionDb, optionDbCharset)
 
-	dbUser, err := Conf.String(sectionDb, optionDbUserName)
+	dbUser, err := config.Conf.String(sectionDb, optionDbUserName)
 	if err != nil || dbUser == "" {
-		log.Fatalf("[config.init] Can NOT read database username option\n", err)
+		log.Fatalf("[config.init] Can NOT read database username option:\n%v", err)
 	}
 
-	dbPass, err := Conf.String(sectionDb, optionDbPassword)
+	dbPass, err := config.Conf.String(sectionDb, optionDbPassword)
 	if err != nil || dbPass == "" {
-		log.Fatalf("[config.init] Can NOT read database password option\n", err)
+		log.Fatalf("[config.init] Can NOT read database password option:\n%v", err)
 	}
 
 	switch DataDriver {
@@ -101,8 +102,8 @@ func init() {
 		}
 	}
 
-	if Conf.HasSection(sectionSms) {
-		SmsUrl, _ = Conf.String(sectionSms, optionSmsUrl)
-		SmsToken, _ = Conf.String(sectionSms, optionSmsToken)
+	if config.Conf.HasSection(sectionSms) {
+		SmsUrl, _ = config.Conf.String(sectionSms, optionSmsURL)
+		SmsToken, _ = config.Conf.String(sectionSms, optionSmsToken)
 	}
 }
