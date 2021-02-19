@@ -2,6 +2,7 @@ package airavail
 
 import (
 	"errors"
+
 	. "github.com/redochen/demos/travelport-uapi/models/air"
 	. "github.com/redochen/demos/travelport-uapi/models/air/airavail"
 	. "github.com/redochen/demos/travelport-uapi/services/air"
@@ -11,8 +12,8 @@ import (
 	airrs "github.com/redochen/demos/travelport-uapi/soap/air/response"
 	comrq "github.com/redochen/demos/travelport-uapi/soap/common/request"
 	comrs "github.com/redochen/demos/travelport-uapi/soap/common/response"
-	. "github.com/redochen/tools/string"
-	. "github.com/redochen/tools/time"
+	CcStr "github.com/redochen/tools/string"
+	CcTime "github.com/redochen/tools/time"
 )
 
 //getReqEnvolpe 获取请求参数

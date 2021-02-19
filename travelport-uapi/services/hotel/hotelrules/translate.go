@@ -3,6 +3,7 @@ package hotelrules
 import (
 	"errors"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/hotel"
 	. "github.com/redochen/demos/travelport-uapi/models/hotel/hotelrules"
 	hotdetsvc "github.com/redochen/demos/travelport-uapi/services/hotel/hoteldetails"
@@ -12,7 +13,7 @@ import (
 	hot "github.com/redochen/demos/travelport-uapi/soap/hotel"
 	hotproxy "github.com/redochen/demos/travelport-uapi/soap/hotel/proxy"
 	hotrq "github.com/redochen/demos/travelport-uapi/soap/hotel/request"
-	. "github.com/redochen/tools/time"
+	CcTime "github.com/redochen/tools/time"
 )
 
 //getReqEnvolpe 获取请求参数

@@ -2,15 +2,16 @@ package hotelavail
 
 import (
 	"encoding/xml"
+	"time"
+
 	cfg "github.com/redochen/demos/travelport-uapi/config"
 	. "github.com/redochen/demos/travelport-uapi/models/hotel/hotelavail"
 	"github.com/redochen/demos/travelport-uapi/soap"
 	hotproxy "github.com/redochen/demos/travelport-uapi/soap/hotel/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
 	. "github.com/redochen/tools/function"
-	. "github.com/redochen/tools/json"
-	. "github.com/redochen/tools/log"
-	"time"
+	CcJson "github.com/redochen/tools/json"
+	"github.com/redochen/tools/log"
 )
 
 //HotelAvailAsync 异步酒店查询接口
@@ -40,12 +41,12 @@ func HotelAvailAsync(param *HotelAvailParam) *HotelAvailResult {
 		break
 	case <-time.After(timeoutSeconds * time.Second):
 		result = SetErrorCode(ErrTimeout)
-		Logger.Error(param.LogContext, " hotel avail search timed out!!!")
+		log.Error(param.LogContext, " hotel avail search timed out!!!")
 		break
 	}
 
 	elapsed := time.Since(start)
-	Logger.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
+	log.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
 
 	return result
 }
@@ -76,14 +77,14 @@ func HotelAvail(param *HotelAvailParam) *HotelAvailResult {
 	//转换查询参数
 	reqEnvelope, err := getReqEnvolpe(param, pcc.BranchCode)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrInvalidParameter)
 	}
 
 	//序列化请求XML文本
 	reqXML, err := xml.Marshal(reqEnvelope)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrParseParameterError)
 	}
 
@@ -92,7 +93,7 @@ func HotelAvail(param *HotelAvailParam) *HotelAvailResult {
 	//调用Galileo接口
 	rspXML, err := PostRequest(pcc, soap.HotelServiceName, reqXML)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrProcessError)
 	}
 
@@ -109,7 +110,7 @@ func HotelAvail(param *HotelAvailParam) *HotelAvailResult {
 	result, err := getResult(rspEnvelope.Body)
 	if err != nil {
 		DumpFile(param.LogContext+".xml", string(rspXML), true)
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrNoAvailDataReturned)
 	}
 

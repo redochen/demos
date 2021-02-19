@@ -2,18 +2,22 @@ package config
 
 import (
 	"errors"
-	. "github.com/redochen/tools/config"
-	. "github.com/redochen/tools/function"
+
+	"github.com/redochen/tools/config"
+	CcFunc "github.com/redochen/tools/function"
 )
 
+// EndpointMap 服务终端定义
 type EndpointMap map[string]string
 
 var (
+	//Endpoints 服务终端集合
 	Endpoints EndpointMap
 )
 
+//InitEndpoints 初始化服务终端列表
 func InitEndpoints() {
-	options, err := Conf.GetOptions(sectionEndpoints)
+	options, err := config.Conf.GetOptions(sectionEndpoints)
 	if err != nil {
 		panic("Failed to load Endpoints config.")
 	}
@@ -24,14 +28,15 @@ func InitEndpoints() {
 			panic("[" + option + "] already exists.")
 		}
 
-		Endpoints[option], _ = Conf.String(sectionEndpoints, option)
+		Endpoints[option], _ = config.Conf.String(sectionEndpoints, option)
 	}
 
 	//fmt.Printf("%v\n", Endpoints)
 }
 
+//Get 根据键名获取服务终端
 func (m EndpointMap) Get(key string) (string, error) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	endpoint, ok := m[key]
 	if !ok {

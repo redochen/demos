@@ -2,7 +2,8 @@ package air
 
 import (
 	"fmt"
-	. "github.com/redochen/tools/time"
+
+	CcTime "github.com/redochen/tools/time"
 )
 
 //Route 路线参数

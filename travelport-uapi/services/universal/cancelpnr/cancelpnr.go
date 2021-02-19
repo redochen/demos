@@ -3,20 +3,21 @@ package cancelpnr
 import (
 	"encoding/xml"
 	"fmt"
+	"time"
+
 	cfg "github.com/redochen/demos/travelport-uapi/config"
 	. "github.com/redochen/demos/travelport-uapi/models/universal/cancelpnr"
 	"github.com/redochen/demos/travelport-uapi/soap"
 	uniproxy "github.com/redochen/demos/travelport-uapi/soap/universal/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	. "github.com/redochen/tools/function"
-	. "github.com/redochen/tools/json"
-	. "github.com/redochen/tools/log"
-	"time"
+	CcFunc "github.com/redochen/tools/function"
+	CcJson "github.com/redochen/tools/json"
+	"github.com/redochen/tools/log"
 )
 
 //CancelPnrAsync 异步取消PNR接口
 func CancelPnrAsync(param *CancelPnrParam) *CancelPnrResult {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	if nil == param {
 		return SetErrorCode(ErrInvalidParameter)
@@ -41,19 +42,19 @@ func CancelPnrAsync(param *CancelPnrParam) *CancelPnrResult {
 		break
 	case <-time.After(timeoutSeconds * time.Second):
 		result = SetErrorCode(ErrTimeout)
-		Logger.Error("CancelPnrAsync", param.LogContext+" cancel pnr timed out!!!")
+		log.Error("CancelPnrAsync", param.LogContext+" cancel pnr timed out!!!")
 		break
 	}
 
 	elapsed := time.Since(start)
-	Logger.Info("CancelPnrAsync", fmt.Sprintf("%s spent %f seconds.", param.LogContext, elapsed.Seconds()))
+	log.Info("CancelPnrAsync", fmt.Sprintf("%s spent %f seconds.", param.LogContext, elapsed.Seconds()))
 
 	return result
 }
 
 //CancelPnr 取消PNR接口
 func CancelPnr(param *CancelPnrParam) *CancelPnrResult {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	if nil == param {
 		return SetErrorCode(ErrInvalidParameter)
@@ -75,14 +76,14 @@ func CancelPnr(param *CancelPnrParam) *CancelPnrResult {
 	//转换查询参数
 	reqEnvelope, err := getReqEnvolpe(param, pcc.BranchCode)
 	if err != nil {
-		Logger.Error("CancelPnr", param.LogContext+err.Error())
+		log.Error("CancelPnr", param.LogContext+err.Error())
 		return SetErrorCode(ErrInvalidParameter)
 	}
 
 	//序列化请求XML文本
 	reqXML, err := xml.Marshal(reqEnvelope)
 	if err != nil {
-		Logger.Error("CancelPnr", param.LogContext+err.Error())
+		log.Error("CancelPnr", param.LogContext+err.Error())
 		return SetErrorCode(ErrParseParameterError)
 	}
 
@@ -93,7 +94,7 @@ func CancelPnr(param *CancelPnrParam) *CancelPnrResult {
 	//调用Galileo接口
 	rspXML, err := PostRequest(pcc, soap.UniversalServiceName, reqXML)
 	if err != nil {
-		Logger.Error("CancelPnr", param.LogContext+err.Error())
+		log.Error("CancelPnr", param.LogContext+err.Error())
 		return SetErrorCode(ErrProcessError)
 	}
 
@@ -109,7 +110,7 @@ func CancelPnr(param *CancelPnrParam) *CancelPnrResult {
 	//转换查询结果
 	result, err := getResult(rspEnvelope.Body)
 	if err != nil {
-		Logger.Error("CancelPnr", param.LogContext+err.Error())
+		log.Error("CancelPnr", param.LogContext+err.Error())
 		return SetErrorCode(ErrCancelPnrError)
 	}
 

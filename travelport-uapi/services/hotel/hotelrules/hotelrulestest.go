@@ -3,11 +3,12 @@ package hotelrules
 import (
 	"encoding/xml"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/hotel/hotelrules"
 	hotproxy "github.com/redochen/demos/travelport-uapi/soap/hotel/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcFile "github.com/redochen/tools/file"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestHotelRulesRQ 测试酒店媒介RQ
@@ -28,7 +29,7 @@ func TestHotelRulesRQ() string {
 	}
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/HotelRulesParam.json", json)
+	CcFile.DumpFile("samples/HotelRulesParam.json", json)
 
 	result := HotelRules(param)
 	val, err := CcJson.Serialize(result)

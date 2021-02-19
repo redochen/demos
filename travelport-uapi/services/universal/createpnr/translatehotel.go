@@ -3,6 +3,7 @@ package createpnr
 import (
 	"errors"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/universal/createpnr"
 	"github.com/redochen/demos/travelport-uapi/soap"
 	com "github.com/redochen/demos/travelport-uapi/soap/common"
@@ -11,8 +12,8 @@ import (
 	hotrq "github.com/redochen/demos/travelport-uapi/soap/hotel/request"
 	hotrs "github.com/redochen/demos/travelport-uapi/soap/hotel/response"
 	uniproxy "github.com/redochen/demos/travelport-uapi/soap/universal/proxy"
-	. "github.com/redochen/tools/string"
-	. "github.com/redochen/tools/time"
+	CcStr "github.com/redochen/tools/string"
+	CcTime "github.com/redochen/tools/time"
 )
 
 //getHotelReqEnvolpe 获取酒店请求参数

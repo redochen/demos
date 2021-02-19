@@ -2,6 +2,7 @@ package lowfare
 
 import (
 	"errors"
+
 	. "github.com/redochen/demos/travelport-uapi/models/air"
 	. "github.com/redochen/demos/travelport-uapi/models/air/lowfare"
 	. "github.com/redochen/demos/travelport-uapi/services/air"
@@ -11,7 +12,7 @@ import (
 	airrs "github.com/redochen/demos/travelport-uapi/soap/air/response"
 	com "github.com/redochen/demos/travelport-uapi/soap/common"
 	comrq "github.com/redochen/demos/travelport-uapi/soap/common/request"
-	. "github.com/redochen/tools/time"
+	CcTime "github.com/redochen/tools/time"
 )
 
 //getReqEnvolpe 获取请求参数

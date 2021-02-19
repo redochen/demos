@@ -3,11 +3,12 @@ package hotelmedia
 import (
 	"encoding/xml"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/hotel/hotelmedia"
 	hotproxy "github.com/redochen/demos/travelport-uapi/soap/hotel/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcFile "github.com/redochen/tools/file"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestHotelMediaRQ 测试酒店媒介RQ
@@ -31,7 +32,7 @@ func TestHotelMediaRQ() string {
 	param.HotelProperties = append(param.HotelProperties, property2)
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/HotelMediaParam.json", json)
+	CcFile.DumpFile("samples/HotelMediaParam.json", json)
 
 	result := HotelMedia(param)
 	val, err := CcJson.Serialize(result)

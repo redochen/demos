@@ -2,6 +2,7 @@ package hoteldetails
 
 import (
 	"errors"
+
 	cfg "github.com/redochen/demos/travelport-uapi/config"
 	. "github.com/redochen/demos/travelport-uapi/models/hotel"
 	hotavmodel "github.com/redochen/demos/travelport-uapi/models/hotel/hotelavail"
@@ -15,7 +16,7 @@ import (
 	hotproxy "github.com/redochen/demos/travelport-uapi/soap/hotel/proxy"
 	hotrq "github.com/redochen/demos/travelport-uapi/soap/hotel/request"
 	hotrs "github.com/redochen/demos/travelport-uapi/soap/hotel/response"
-	. "github.com/redochen/tools/time"
+	CcTime "github.com/redochen/tools/time"
 )
 
 //getReqEnvolpe 获取请求参数

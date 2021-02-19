@@ -3,12 +3,13 @@ package airavail
 import (
 	"encoding/xml"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/air"
 	. "github.com/redochen/demos/travelport-uapi/models/air/airavail"
 	airproxy "github.com/redochen/demos/travelport-uapi/soap/air/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
 	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestAirAvailRQ 测试AV查询RQ

@@ -2,20 +2,21 @@ package createpnr
 
 import (
 	"encoding/xml"
+	"time"
+
 	cfg "github.com/redochen/demos/travelport-uapi/config"
 	. "github.com/redochen/demos/travelport-uapi/models/universal/createpnr"
 	"github.com/redochen/demos/travelport-uapi/soap"
 	uniproxy "github.com/redochen/demos/travelport-uapi/soap/universal/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	. "github.com/redochen/tools/function"
-	. "github.com/redochen/tools/json"
-	. "github.com/redochen/tools/log"
-	"time"
+	CcFunc "github.com/redochen/tools/function"
+	CcJson "github.com/redochen/tools/json"
+	"github.com/redochen/tools/log"
 )
 
 //CreatePnrAsync 异步实时订座接口
 func CreatePnrAsync(param *CreatePnrParam) *CreatePnrResult {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	if nil == param {
 		return SetErrorCode(ErrInvalidParameter)
@@ -40,19 +41,19 @@ func CreatePnrAsync(param *CreatePnrParam) *CreatePnrResult {
 		break
 	case <-time.After(timeoutSeconds * time.Second):
 		result = SetErrorCode(ErrTimeout)
-		Logger.Error(param.LogContext, " create pnr timed out!!!")
+		log.Error(param.LogContext, " create pnr timed out!!!")
 		break
 	}
 
 	elapsed := time.Since(start)
-	Logger.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
+	log.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
 
 	return result
 }
 
 //CreatePnr 实时订座接口
 func CreatePnr(param *CreatePnrParam) *CreatePnrResult {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	if nil == param {
 		return SetErrorCode(ErrInvalidParameter)
@@ -85,14 +86,14 @@ func CreateAirPnr(pcc *cfg.PCC, param *CreatePnrParam) *CreatePnrResult {
 	//转换查询参数
 	reqEnvelope, err := getAirReqEnvolpe(param, pcc.BranchCode)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrInvalidParameter)
 	}
 
 	//序列化请求XML文本
 	reqXML, err := xml.Marshal(reqEnvelope)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrParseParameterError)
 	}
 
@@ -101,7 +102,7 @@ func CreateAirPnr(pcc *cfg.PCC, param *CreatePnrParam) *CreatePnrResult {
 	//调用Galileo接口
 	rspXML, err := PostRequest(pcc, soap.AirServiceName, reqXML)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrProcessError)
 	}
 
@@ -121,7 +122,7 @@ func CreateAirPnr(pcc *cfg.PCC, param *CreatePnrParam) *CreatePnrResult {
 
 	result, err := getAirResult(rspEnvelope.Body)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrCreatePnrError)
 	}
 
@@ -138,14 +139,14 @@ func CreateHotelPnr(pcc *cfg.PCC, param *CreatePnrParam) *CreatePnrResult {
 	//转换查询参数
 	reqEnvelope, err := getHotelReqEnvolpe(param, pcc.BranchCode)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrInvalidParameter)
 	}
 
 	//序列化请求XML文本
 	reqXML, err := xml.Marshal(reqEnvelope)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrParseParameterError)
 	}
 
@@ -154,7 +155,7 @@ func CreateHotelPnr(pcc *cfg.PCC, param *CreatePnrParam) *CreatePnrResult {
 	//调用Galileo接口
 	rspXML, err := PostRequest(pcc, soap.HotelServiceName, reqXML)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrProcessError)
 	}
 
@@ -174,7 +175,7 @@ func CreateHotelPnr(pcc *cfg.PCC, param *CreatePnrParam) *CreatePnrResult {
 
 	result, err := getHotelResult(rspEnvelope.Body)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrCreatePnrError)
 	}
 

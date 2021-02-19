@@ -1,15 +1,16 @@
 package air
 
 import (
+	"strconv"
+	"strings"
+
 	. "github.com/redochen/demos/travelport-uapi/models/air"
 	"github.com/redochen/demos/travelport-uapi/soap/air"
 	airrq "github.com/redochen/demos/travelport-uapi/soap/air/request"
 	airrs "github.com/redochen/demos/travelport-uapi/soap/air/response"
 	com "github.com/redochen/demos/travelport-uapi/soap/common"
 	comrq "github.com/redochen/demos/travelport-uapi/soap/common/request"
-	. "github.com/redochen/tools/string"
-	"strconv"
-	"strings"
+	CcStr "github.com/redochen/tools/string"
 )
 
 //GetAirSegmentParam 获取航段请求参数

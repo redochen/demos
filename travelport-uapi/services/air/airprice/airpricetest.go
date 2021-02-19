@@ -3,12 +3,13 @@ package airprice
 import (
 	"encoding/xml"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/air"
 	. "github.com/redochen/demos/travelport-uapi/models/air/airprice"
 	airproxy "github.com/redochen/demos/travelport-uapi/soap/air/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcFile "github.com/redochen/tools/file"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestAirPriceRQ 测试获取价格RQ
@@ -73,7 +74,7 @@ func TestAirPriceRQ() string {
 	param.Passengers = append(param.Passengers, adult)
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/AirPriceParam.json", json)
+	CcFile.DumpFile("samples/AirPriceParam.json", json)
 
 	result := AirPrice(param)
 	val, err := CcJson.Serialize(result)

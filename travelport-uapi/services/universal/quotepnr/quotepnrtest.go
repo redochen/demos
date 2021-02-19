@@ -2,9 +2,10 @@ package quotepnr
 
 import (
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/universal/quotepnr"
-	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcFile "github.com/redochen/tools/file"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestQuotePnrRQ 测试询价PNR RQ
@@ -19,7 +20,7 @@ func TestQuotePnrRQ() string {
 	param.TimeoutSeconds = 60
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/QuotePnrParam.json", json)
+	CcFile.DumpFile("samples/QuotePnrParam.json", json)
 
 	result := QuotePnr(param)
 	val, err := CcJson.Serialize(result)

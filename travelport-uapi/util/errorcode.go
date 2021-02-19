@@ -1,5 +1,6 @@
 package util
 
+//ErrorCode 错误代码
 type ErrorCode int
 
 const (
@@ -36,7 +37,7 @@ const (
 	ErrUnkown //未知错误
 )
 
-//获取错误代码的字符串值
+//String 获取错误代码的字符串值
 func (self ErrorCode) String() string {
 	switch self {
 	case ErrSuccess:
@@ -87,11 +88,11 @@ func (self ErrorCode) String() string {
 	return "unkown error"
 }
 
-//获取错误代码的整数值
+//Value 获取错误代码的整数值
 func (self ErrorCode) Value() int {
 	if self >= ErrSuccess && self < ErrUnkown {
 		return int(self)
-	} else {
-		return int(ErrUnkown)
 	}
+
+	return int(ErrUnkown)
 }

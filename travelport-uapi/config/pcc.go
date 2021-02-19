@@ -2,29 +2,34 @@ package config
 
 import (
 	"errors"
-	. "github.com/redochen/tools/config"
-	. "github.com/redochen/tools/function"
+
+	"github.com/redochen/tools/config"
+	CcFunc "github.com/redochen/tools/function"
 )
 
+//PCC pcc上下文
 type PCC struct {
-	UserId     string //账号
+	UserID     string //账号
 	Password   string //密码
 	BranchCode string //Branch代码
 	EndPoint   string //接口地址
 }
 
+//PccMap pcc集合定义
 type PccMap map[string]*PCC
 
 var (
-	PCCs PccMap //PCC列表
+	//PCCs PCC列表
+	PCCs PccMap
 )
 
+//InitPccs 初始化pcc列表
 func InitPccs() {
 	PCCs = make(map[string]*PCC)
 
-	sections := Conf.GetSections()
+	sections := config.Conf.GetSections()
 	for _, section := range sections {
-		if Conf.IsDefaultSection(section) {
+		if config.Conf.IsDefaultSection(section) {
 			continue
 		}
 
@@ -40,27 +45,28 @@ func InitPccs() {
 	//fmt.Printf("%v\n", PCCs)
 }
 
+//SetPcc 设置pcc配置
 func (m PccMap) SetPcc(pcc string) {
 	if _, ok := m[pcc]; ok {
 		panic("[" + pcc + "] already exists.")
 	}
 
-	userId, err := Conf.String(pcc, optionUserId)
+	userID, err := config.Conf.String(pcc, optionUserID)
 	if err != nil {
 		panic("[" + pcc + "] failed to load userId")
 	}
 
-	pwd, err := Conf.String(pcc, optionPassword)
+	pwd, err := config.Conf.String(pcc, optionPassword)
 	if err != nil {
 		panic("[" + pcc + "] failed to load password")
 	}
 
-	branchCode, err := Conf.String(pcc, optionBranchCode)
+	branchCode, err := config.Conf.String(pcc, optionBranchCode)
 	if err != nil {
 		panic("[" + pcc + "] failed to load branchCode")
 	}
 
-	endPoint, err := Conf.String(pcc, optionEndPoint)
+	endPoint, err := config.Conf.String(pcc, optionEndPoint)
 	if err != nil {
 		panic("[" + pcc + "] failed to load endPoint")
 	}
@@ -71,7 +77,7 @@ func (m PccMap) SetPcc(pcc string) {
 	}
 
 	inst := &PCC{
-		UserId:     userId,
+		UserID:     userID,
 		Password:   pwd,
 		BranchCode: branchCode,
 		EndPoint:   ep,
@@ -80,8 +86,9 @@ func (m PccMap) SetPcc(pcc string) {
 	m[pcc] = inst
 }
 
+//Get 根据pcc获取配置
 func (m PccMap) Get(pcc string) (*PCC, error) {
-	defer CheckPanic()
+	defer CcFunc.CheckPanic()
 
 	inst, ok := m[pcc]
 	if !ok {

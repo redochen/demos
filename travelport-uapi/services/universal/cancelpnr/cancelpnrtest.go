@@ -3,11 +3,12 @@ package cancelpnr
 import (
 	"encoding/xml"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/universal/cancelpnr"
 	uniproxy "github.com/redochen/demos/travelport-uapi/soap/universal/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcFile "github.com/redochen/tools/file"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestCancelPnrRQ 测试取消PNR RQ
@@ -21,7 +22,7 @@ func TestCancelPnrRQ() string {
 	param.TimeoutSeconds = 60
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/CancelPnrParam.json", json)
+	CcFile.DumpFile("samples/CancelPnrParam.json", json)
 
 	result := CancelPnr(param)
 	val, err := CcJson.Serialize(result)

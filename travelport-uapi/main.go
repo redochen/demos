@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
-	. "github.com/gin-gonic/contrib/gzip"
-	"github.com/gin-gonic/gin"
-	"github.com/redochen/demos/travelport-uapi/config"
-	svc "github.com/redochen/demos/travelport-uapi/services"
-	. "github.com/redochen/tools/log"
-	. "github.com/redochen/tools/string"
 	"net/http"
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/contrib/gzip"
+	"github.com/gin-gonic/gin"
+	"github.com/redochen/demos/travelport-uapi/config"
+	svc "github.com/redochen/demos/travelport-uapi/services"
+	"github.com/redochen/tools/log"
+	CcStr "github.com/redochen/tools/string"
 )
 
 //入口方法
@@ -25,7 +26,7 @@ func main() {
 	r := gin.New()
 	r.Use(keepAlive())
 	//r.Use(ginLogger())
-	r.Use(Gzip(BestCompression))
+	r.Use(gzip.Gzip(gzip.BestCompression))
 
 	//路由映射
 	r.GET("/Hello/:name", hello)
@@ -84,7 +85,7 @@ func ginLogger() gin.HandlerFunc {
 		//log.Print(latency)
 
 		// access the status we are sending
-		Logger.Infof("%s; Completed %v %s in %v.",
+		log.Infof("%s; Completed %v %s in %v.",
 			msg, c.Writer.Status(), http.StatusText(c.Writer.Status()), latency)
 	}
 }

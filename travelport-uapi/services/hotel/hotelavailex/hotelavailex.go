@@ -1,15 +1,16 @@
 package hotelavailex
 
 import (
+	"time"
+
 	cfg "github.com/redochen/demos/travelport-uapi/config"
 	. "github.com/redochen/demos/travelport-uapi/models/hotel/hotelavailex"
 	hotavsvc "github.com/redochen/demos/travelport-uapi/services/hotel/hotelavail"
 	hotmisvc "github.com/redochen/demos/travelport-uapi/services/hotel/hotelmedia"
 	. "github.com/redochen/demos/travelport-uapi/util"
 	. "github.com/redochen/tools/function"
-	. "github.com/redochen/tools/json"
-	. "github.com/redochen/tools/log"
-	"time"
+	CcJson "github.com/redochen/tools/json"
+	"github.com/redochen/tools/log"
 )
 
 //HotelAvailExAsync 异步酒店查询接口
@@ -39,12 +40,12 @@ func HotelAvailExAsync(param *HotelAvailExParam) *HotelAvailExResult {
 		break
 	case <-time.After(timeoutSeconds * time.Second):
 		result = SetErrorCode(ErrTimeout)
-		Logger.Error(param.LogContext, " hotel availex search timed out!!!")
+		log.Error(param.LogContext, " hotel availex search timed out!!!")
 		break
 	}
 
 	elapsed := time.Since(start)
-	Logger.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
+	log.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
 
 	return result
 }
@@ -62,7 +63,7 @@ func HotelAvailEx(param *HotelAvailExParam) *HotelAvailExResult {
 	//调用HotelAvail接口
 	hotelAvailResult := hotavsvc.HotelAvail(&param.HotelAvailParam)
 	if nil == hotelAvailResult {
-		Logger.Error(param.LogContext, "HotelAvail failed")
+		log.Error(param.LogContext, "HotelAvail failed")
 		return SetErrorCode(ErrHotelAvailError)
 	}
 
@@ -72,13 +73,13 @@ func HotelAvailEx(param *HotelAvailExParam) *HotelAvailExResult {
 	if result.Status == 0 {
 		hotelMediaParam := getHotelMediaParamFromHotelAvailResult(hotelAvailResult, param)
 		if nil == hotelMediaParam {
-			Logger.Error(param.LogContext, "getHotelMediaParamFromHotelAvailResult failed")
+			log.Error(param.LogContext, "getHotelMediaParamFromHotelAvailResult failed")
 			result.SetErrorCode(ErrNoAvailDataReturned)
 		} else {
 			//调用HotelMedia接口
 			hotelMediaResult := hotmisvc.HotelMedia(hotelMediaParam)
 			if nil == hotelMediaResult {
-				Logger.Error(param.LogContext, "HotelMedia failed")
+				log.Error(param.LogContext, "HotelMedia failed")
 				result.SetErrorCode(ErrHotelMediaError)
 			} else {
 				result.FillinByHotelMediaResult(hotelMediaResult)

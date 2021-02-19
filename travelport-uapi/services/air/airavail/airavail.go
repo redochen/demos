@@ -3,6 +3,8 @@ package airavail
 import (
 	"encoding/xml"
 	"fmt"
+	"time"
+
 	cfg "github.com/redochen/demos/travelport-uapi/config"
 	. "github.com/redochen/demos/travelport-uapi/models/air/airavail"
 	"github.com/redochen/demos/travelport-uapi/soap"
@@ -11,9 +13,8 @@ import (
 	comrs "github.com/redochen/demos/travelport-uapi/soap/common/response"
 	. "github.com/redochen/demos/travelport-uapi/util"
 	. "github.com/redochen/tools/function"
-	. "github.com/redochen/tools/json"
-	. "github.com/redochen/tools/log"
-	"time"
+	CcJson "github.com/redochen/tools/json"
+	"github.com/redochen/tools/log"
 )
 
 //AirAvailAsync 异步AV查询接口
@@ -43,12 +44,12 @@ func AirAvailAsync(param *AirAvailParam) *AirAvailResult {
 		break
 	case <-time.After(timeoutSeconds * time.Second):
 		result = SetErrorCode(ErrTimeout)
-		Logger.Error(param.LogContext, " air avail search timed out!!!")
+		log.Error(param.LogContext, " air avail search timed out!!!")
 		break
 	}
 
 	elapsed := time.Since(start)
-	Logger.Debugf("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
+	log.Debugf("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
 
 	return result
 }
@@ -134,14 +135,14 @@ func getAvail(param *AirAvailParam, nextRspResultReferences []*comrs.NextResultR
 
 	reqEnvelope, err := getReqEnvolpe(param, nextReqResultReferences, pcc.BranchCode)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrInvalidParameter), nil
 	}
 
 	//序列化请求XML文本
 	reqXML, err := xml.Marshal(reqEnvelope)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrParseParameterError), nil
 	}
 
@@ -161,7 +162,7 @@ func getAvail(param *AirAvailParam, nextRspResultReferences []*comrs.NextResultR
 	//调用Galileo接口
 	rspXML, err := PostRequest(pcc, soap.AirServiceName, reqXML)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrProcessError), nil
 	}
 
@@ -177,7 +178,7 @@ func getAvail(param *AirAvailParam, nextRspResultReferences []*comrs.NextResultR
 	//转换查询结果
 	result, nextRefs, err := getResult(rspEnvelope.Body)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrNoAvailDataReturned), nextRefs
 	}
 

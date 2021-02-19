@@ -1,7 +1,7 @@
 package common
 
 import (
-	. "github.com/redochen/tools/string"
+	CcStr "github.com/redochen/tools/string"
 )
 
 //GetCurrency 获取货币代码

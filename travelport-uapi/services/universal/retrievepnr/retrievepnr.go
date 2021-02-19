@@ -2,15 +2,16 @@ package retrievepnr
 
 import (
 	"encoding/xml"
+	"time"
+
 	cfg "github.com/redochen/demos/travelport-uapi/config"
 	. "github.com/redochen/demos/travelport-uapi/models/universal/retrievepnr"
 	"github.com/redochen/demos/travelport-uapi/soap"
 	uniproxy "github.com/redochen/demos/travelport-uapi/soap/universal/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
 	. "github.com/redochen/tools/function"
-	. "github.com/redochen/tools/json"
-	. "github.com/redochen/tools/log"
-	"time"
+	CcJson "github.com/redochen/tools/json"
+	"github.com/redochen/tools/log"
 )
 
 //RetrievePnrAsync 异步提取PNR接口
@@ -40,12 +41,12 @@ func RetrievePnrAsync(param *RetrievePnrParam) *RetrievePnrResult {
 		break
 	case <-time.After(timeoutSeconds * time.Second):
 		result = SetErrorCode(ErrTimeout)
-		Logger.Error(param.LogContext, " retrieve pnr timed out!!!")
+		log.Error(param.LogContext, " retrieve pnr timed out!!!")
 		break
 	}
 
 	elapsed := time.Since(start)
-	Logger.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
+	log.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
 
 	return result
 }
@@ -76,14 +77,14 @@ func RetrievePnr(param *RetrievePnrParam) *RetrievePnrResult {
 	//转换查询参数
 	reqEnvelope, err := getReqEnvolpe(param, pcc.BranchCode)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrInvalidParameter)
 	}
 
 	//序列化请求XML文本
 	reqXML, err := xml.Marshal(reqEnvelope)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrParseParameterError)
 	}
 
@@ -94,7 +95,7 @@ func RetrievePnr(param *RetrievePnrParam) *RetrievePnrResult {
 	//调用Galileo接口
 	rspXML, err := PostRequest(pcc, soap.UniversalServiceName, reqXML)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrProcessError)
 	}
 
@@ -110,7 +111,7 @@ func RetrievePnr(param *RetrievePnrParam) *RetrievePnrResult {
 	//转换查询结果
 	result, err := getResult(rspEnvelope.Body)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrRetrievePnrError)
 	}
 

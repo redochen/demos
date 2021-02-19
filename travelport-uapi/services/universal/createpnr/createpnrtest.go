@@ -3,12 +3,13 @@ package createpnr
 import (
 	"encoding/xml"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/air"
 	. "github.com/redochen/demos/travelport-uapi/models/universal/createpnr"
 	uniproxy "github.com/redochen/demos/travelport-uapi/soap/universal/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcFile "github.com/redochen/tools/file"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestCreateAirPnrRQ 测试创建机票PNR RQ
@@ -25,7 +26,7 @@ func TestCreateAirPnrRQ() string {
 	//param.Payments = append(param.Payments, getFormOfPayment())
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/CreateAirPnrParam.json", json)
+	CcFile.DumpFile("samples/CreateAirPnrParam.json", json)
 
 	return testCreatePnrRQ(param)
 }
@@ -42,7 +43,7 @@ func TestCreateHotelPnrRQ() string {
 	param.Payments = append(param.Payments, getDefaultFormOfPayment())
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/CreateHotelPnrParam.json", json)
+	CcFile.DumpFile("samples/CreateHotelPnrParam.json", json)
 
 	return testCreatePnrRQ(param)
 }

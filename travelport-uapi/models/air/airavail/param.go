@@ -2,6 +2,7 @@ package airavail
 
 import (
 	"fmt"
+
 	"github.com/redochen/demos/travelport-uapi/models"
 	. "github.com/redochen/demos/travelport-uapi/models/air"
 )

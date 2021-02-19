@@ -2,9 +2,10 @@ package airprice
 
 import (
 	"fmt"
+
 	"github.com/redochen/demos/travelport-uapi/models"
 	. "github.com/redochen/demos/travelport-uapi/models/air"
-	. "github.com/redochen/tools/time"
+	CcTime "github.com/redochen/tools/time"
 )
 
 //AirPriceParam AirPrice接口参数

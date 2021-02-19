@@ -3,11 +3,12 @@ package retrievepnr
 import (
 	"encoding/xml"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/universal/retrievepnr"
 	uniproxy "github.com/redochen/demos/travelport-uapi/soap/universal/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcFile "github.com/redochen/tools/file"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestRetrievePnrRQ 测试提取PNR RQ
@@ -20,7 +21,7 @@ func TestRetrievePnrRQ() string {
 	param.TimeoutSeconds = 60
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/RetrievePnrParam.json", json)
+	CcFile.DumpFile("samples/RetrievePnrParam.json", json)
 
 	result := RetrievePnr(param)
 	val, err := CcJson.Serialize(result)

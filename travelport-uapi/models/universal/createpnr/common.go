@@ -2,8 +2,9 @@ package createpnr
 
 import (
 	"fmt"
-	. "github.com/redochen/tools/time"
 	"time"
+
+	CcTime "github.com/redochen/tools/time"
 )
 
 //Traveler 旅客

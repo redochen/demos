@@ -2,7 +2,8 @@ package air
 
 import (
 	"fmt"
-	. "github.com/redochen/tools/time"
+
+	CcTime "github.com/redochen/tools/time"
 )
 
 //Segment 航段类

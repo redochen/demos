@@ -2,15 +2,16 @@ package hoteldetails
 
 import (
 	"encoding/xml"
+	"time"
+
 	cfg "github.com/redochen/demos/travelport-uapi/config"
 	. "github.com/redochen/demos/travelport-uapi/models/hotel/hoteldetails"
 	"github.com/redochen/demos/travelport-uapi/soap"
 	hotproxy "github.com/redochen/demos/travelport-uapi/soap/hotel/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
 	. "github.com/redochen/tools/function"
-	. "github.com/redochen/tools/json"
-	. "github.com/redochen/tools/log"
-	"time"
+	CcJson "github.com/redochen/tools/json"
+	"github.com/redochen/tools/log"
 )
 
 //HotelDetailsAsync 异步获取酒店详情接口
@@ -40,12 +41,12 @@ func HotelDetailsAsync(param *HotelDetailsParam) *HotelDetailsResult {
 		break
 	case <-time.After(timeoutSeconds * time.Second):
 		result = SetErrorCode(ErrTimeout)
-		Logger.Error(param.LogContext, " hotel details search timed out!!!")
+		log.Error(param.LogContext, " hotel details search timed out!!!")
 		break
 	}
 
 	elapsed := time.Since(start)
-	Logger.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
+	log.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
 
 	return result
 }
@@ -76,14 +77,14 @@ func HotelDetails(param *HotelDetailsParam) *HotelDetailsResult {
 	//转换查询参数
 	reqEnvelope, err := getReqEnvolpe(param, pcc.BranchCode)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrInvalidParameter)
 	}
 
 	//序列化请求XML文本
 	reqXML, err := xml.Marshal(reqEnvelope)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrParseParameterError)
 	}
 
@@ -92,7 +93,7 @@ func HotelDetails(param *HotelDetailsParam) *HotelDetailsResult {
 	//调用Galileo接口
 	rspXML, err := PostRequest(pcc, soap.HotelServiceName, reqXML)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrProcessError)
 	}
 
@@ -108,7 +109,7 @@ func HotelDetails(param *HotelDetailsParam) *HotelDetailsResult {
 	//转换查询结果
 	result, err := getResult(rspEnvelope.Body)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrNoAvailDataReturned)
 	}
 

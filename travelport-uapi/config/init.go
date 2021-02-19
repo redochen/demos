@@ -2,13 +2,19 @@ package config
 
 import (
 	"fmt"
-	. "github.com/redochen/tools/config"
+
+	"github.com/redochen/tools/config"
 )
 
 const (
-	DefaultPort           string = "80" //监听端口
-	DefaultTimeoutSeconds int    = 30   //接口超时秒数
-	DefaultOutputToFile   int    = 0    //是否输出到文件
+	//DefaultPort 监听端口
+	DefaultPort string = "80"
+
+	//DefaultTimeoutSeconds 接口超时秒数
+	DefaultTimeoutSeconds int = 30
+
+	//DefaultOutputToFile 是否输出到文件
+	DefaultOutputToFile int = 0
 
 	//server配置节点
 	sectionSvr    = "server"
@@ -18,7 +24,7 @@ const (
 
 	//endpoints配置节点
 	sectionEndpoints = "endpoints"
-	optionUserId     = "userId"
+	optionUserID     = "userId"
 	optionPassword   = "password"
 	optionBranchCode = "branchCode"
 	optionEndPoint   = "endPoint"
@@ -28,22 +34,27 @@ const (
 )
 
 var (
-	Port           = "80"  //监听端口
-	TimeoutSeconds = 30    //接口超时秒数
-	OutputToFile   = false //是否输出到文件
+	//Port 监听端口
+	Port = "80"
+
+	//TimeoutSeconds 接口超时秒数
+	TimeoutSeconds = 30
+
+	//OutputToFile 是否输出到文件
+	OutputToFile = false
 )
 
 //初始化
 func init() {
-	if nil == Conf || !Conf.IsValid() {
+	if nil == config.Conf || !config.Conf.IsValid() {
 		return
 	}
 
 	fmt.Println("loading travelport config...")
 
-	Port = Conf.StringEx(sectionSvr, optionSvrPort, DefaultPort)
-	TimeoutSeconds = Conf.IntEx(sectionSvr, optionTimeout, DefaultTimeoutSeconds)
-	outputToFile := Conf.IntEx(sectionSvr, optionOutput, DefaultOutputToFile)
+	Port = config.Conf.StringEx(sectionSvr, optionSvrPort, DefaultPort)
+	TimeoutSeconds = config.Conf.IntEx(sectionSvr, optionTimeout, DefaultTimeoutSeconds)
+	outputToFile := config.Conf.IntEx(sectionSvr, optionOutput, DefaultOutputToFile)
 	OutputToFile = (outputToFile != 0)
 
 	InitEndpoints()

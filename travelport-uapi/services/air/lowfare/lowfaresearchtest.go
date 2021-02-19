@@ -3,12 +3,13 @@ package lowfare
 import (
 	"encoding/xml"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/air"
 	. "github.com/redochen/demos/travelport-uapi/models/air/lowfare"
 	airproxy "github.com/redochen/demos/travelport-uapi/soap/air/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcFile "github.com/redochen/tools/file"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestLowFareRQ 测试运价查询RQ
@@ -52,7 +53,7 @@ func TestLowFareRQ() string {
 	*/
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/LowFareParam.json", json)
+	CcFile.DumpFile("samples/LowFareParam.json", json)
 
 	result := LowFare(param)
 	val, err := CcJson.Serialize(result)

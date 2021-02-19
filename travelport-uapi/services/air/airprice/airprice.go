@@ -2,15 +2,16 @@ package airprice
 
 import (
 	"encoding/xml"
+	"time"
+
 	cfg "github.com/redochen/demos/travelport-uapi/config"
 	. "github.com/redochen/demos/travelport-uapi/models/air/airprice"
 	"github.com/redochen/demos/travelport-uapi/soap"
 	airproxy "github.com/redochen/demos/travelport-uapi/soap/air/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
 	. "github.com/redochen/tools/function"
-	. "github.com/redochen/tools/json"
-	. "github.com/redochen/tools/log"
-	"time"
+	CcJson "github.com/redochen/tools/json"
+	"github.com/redochen/tools/log"
 )
 
 //AirPriceAsync 异步获取价格接口
@@ -40,12 +41,12 @@ func AirPriceAsync(param *AirPriceParam) *AirPriceResult {
 		break
 	case <-time.After(timeoutSeconds * time.Second):
 		result = SetErrorCode(ErrTimeout)
-		Logger.Error(param.LogContext, " air price timed out!!!")
+		log.Error(param.LogContext, " air price timed out!!!")
 		break
 	}
 
 	elapsed := time.Since(start)
-	Logger.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
+	log.Infof("%s spent %f seconds.", param.LogContext, elapsed.Seconds())
 
 	return result
 }
@@ -76,14 +77,14 @@ func AirPrice(param *AirPriceParam) *AirPriceResult {
 	//转换查询参数
 	reqEnvelope, err := getReqEnvolpe(param, pcc.BranchCode)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrInvalidParameter)
 	}
 
 	//序列化请求XML文本
 	reqXML, err := xml.Marshal(reqEnvelope)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrParseParameterError)
 	}
 
@@ -92,7 +93,7 @@ func AirPrice(param *AirPriceParam) *AirPriceResult {
 	//调用Galileo接口
 	rspXML, err := PostRequest(pcc, soap.AirServiceName, reqXML)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrProcessError)
 	}
 
@@ -112,7 +113,7 @@ func AirPrice(param *AirPriceParam) *AirPriceResult {
 
 	result, err := getResult(rspEnvelope.Body)
 	if err != nil {
-		Logger.Error(param.LogContext, err.Error())
+		log.Error(param.LogContext, err.Error())
 		return SetErrorCode(ErrNoFareDataReturned)
 	}
 

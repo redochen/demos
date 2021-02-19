@@ -3,11 +3,12 @@ package hotelavail
 import (
 	"encoding/xml"
 	"fmt"
+
 	. "github.com/redochen/demos/travelport-uapi/models/hotel/hotelavail"
 	hotproxy "github.com/redochen/demos/travelport-uapi/soap/hotel/proxy"
 	. "github.com/redochen/demos/travelport-uapi/util"
-	ccfile "github.com/redochen/tools/file"
-	. "github.com/redochen/tools/json"
+	CcFile "github.com/redochen/tools/file"
+	CcJson "github.com/redochen/tools/json"
 )
 
 //TestHotelAvailRQ  测试酒店查询RQ
@@ -19,7 +20,7 @@ func TestHotelAvailRQ() string {
 	}
 
 	json, _ := CcJson.Serialize(param)
-	ccfile.DumpFile("samples/HotelAvailParam.json", json)
+	CcFile.DumpFile("samples/HotelAvailParam.json", json)
 
 	result := HotelAvail(param)
 	val, err := CcJson.Serialize(result)

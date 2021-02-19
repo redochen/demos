@@ -3,26 +3,27 @@ package util
 import (
 	"errors"
 	"fmt"
-	cfg "github.com/redochen/demos/travelport-uapi/config"
-	ccfile "github.com/redochen/tools/file"
-	hxhttp "github.com/redochen/tools/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/redochen/demos/travelport-uapi/config"
+	CcFile "github.com/redochen/tools/file"
+	Cchttp "github.com/redochen/tools/http"
 )
 
 //PostRequest 发送请求到接口
-func PostRequest(pcc *cfg.PCC, svcName string, buf []byte) (string, error) {
+func PostRequest(pcc *config.PCC, svcName string, buf []byte) (string, error) {
 	if nil == pcc {
 		return "", errors.New("PCC is nil")
 	}
 
-	req := &hxhttp.Request{
-		Url:            pcc.EndPoint + svcName,
+	req := &Cchttp.Request{
+		URL:            pcc.EndPoint + svcName,
 		Method:         "POST",
 		AcceptEncoding: "gzip,deflate",
 		ContentType:    "text/xml;charset=UTF-8",
-		UserName:       pcc.UserId,
+		UserName:       pcc.UserID,
 		Password:       pcc.Password,
 		PostString:     string(buf),
 		TimeoutSeconds: 60,
@@ -54,7 +55,7 @@ func GetCabinClass(cabin string) string {
 
 //DumpFile 保存DUMP文件
 func DumpFile(file string, val string, force bool) {
-	if !cfg.OutputToFile && !force {
+	if !config.OutputToFile && !force {
 		return
 	}
 
@@ -78,12 +79,12 @@ func DumpFile(file string, val string, force bool) {
 		os.Remove(fullPath)
 	}
 
-	go ccfile.DumpFile(fullPath, val)
+	go CcFile.DumpFile(fullPath, val)
 }
 
 //LoadFile 加载文件
 func LoadFile(file string) (string, error) {
-	fe, err := ccfile.Open(file, false, true)
+	fe, err := CcFile.Open(file, false, true)
 	if err != nil {
 		return "", err
 	}
